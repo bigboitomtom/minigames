@@ -1,0 +1,252 @@
+import { Box, Button, Typography } from "@mui/material";
+import { Navbar } from "../components/Navbar";
+import { useEffect, useState } from "react";
+import { generate } from "random-words";
+
+const DEFAULT_SCORE = 0;
+const DEFAULT_LIVES = 3;
+const DEFAULT_HINTS = 5;
+const DEFAULT_TIME = 10;
+
+const generateNewWord = (dictionary: string[]): string => {
+  if (dictionary.length === 0) {
+    return generate({ maxLength: 3 }) as string;
+  }
+
+  const prob = Math.random();
+  const repeatIndex = Math.floor(Math.random() * (dictionary.length - 1));
+
+  console.log("index", repeatIndex);
+
+  if (dictionary.length <= 15 && prob <= 0.2) {
+    return dictionary[repeatIndex];
+  } else if (dictionary.length <= 25 && prob <= 0.3) {
+    return dictionary[repeatIndex];
+  } else if (dictionary.length <= 35 && prob <= 0.4) {
+    return dictionary[repeatIndex];
+  } else if (dictionary.length > 35 && prob <= 0.5) {
+    return dictionary[repeatIndex];
+  } else {
+    return generate({ maxLength: 3 }) as string;
+  }
+};
+
+export function MemoryDictionary() {
+  const [isActive, setIsActive] = useState<boolean>(false);
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
+  const [isViewing, setIsViewing] = useState<boolean>(false);
+  const [currWord, setCurrWord] = useState<string>(
+    generate({ maxLength: 3 }) as string
+  );
+  const [score, setScore] = useState<number>(DEFAULT_SCORE);
+  const [highScore, setHighScore] = useState<number>(() => {
+    return parseInt(localStorage.getItem("highScore") as string) || 0;
+  });
+  const [lives, setLives] = useState<number>(DEFAULT_LIVES);
+  const [hints, setHints] = useState<number>(DEFAULT_HINTS);
+  const [dictionary, setDictionary] = useState<string[]>([]);
+
+  const [timeLeft, setTimeLeft] = useState<number>(DEFAULT_TIME);
+  const [timerRunning, setTimerRunning] = useState<boolean>(true);
+
+  const processAnswer = (isMistake: boolean): void => {
+    if (isMistake) {
+      const newLives = lives - 1;
+      if (newLives === 0) {
+        setIsGameOver(true);
+      } else {
+        setLives(newLives);
+      }
+    } else {
+      setScore(score + 1);
+    }
+    setDictionary([...dictionary, currWord]);
+    setCurrWord(generateNewWord(dictionary));
+    setTimeLeft(DEFAULT_TIME);
+  };
+
+  const handleAdd = () => {
+    const isMistake = dictionary.includes(currWord);
+    processAnswer(isMistake);
+  };
+
+  const handleSeen = () => {
+    const isMistake = !dictionary.includes(currWord);
+    processAnswer(isMistake);
+  };
+
+  const handleView = () => {
+    if (hints !== 0) {
+      setHints(hints - 1);
+      setIsViewing(true);
+      setIsActive(false);
+      setTimerRunning(false);
+    }
+  };
+
+  const handleViewClose = () => {
+    setIsViewing(false);
+    setIsActive(true);
+    setTimerRunning(true);
+    // Add one second since view close takes one second
+    setTimeLeft(timeLeft + 1);
+  };
+
+  const handleNewGame = () => {
+    setIsActive(true);
+    setIsGameOver(false);
+    setScore(DEFAULT_SCORE);
+    setLives(DEFAULT_LIVES);
+    setHints(DEFAULT_HINTS);
+    setTimeLeft(DEFAULT_TIME);
+    setHighScore(() => {
+      return parseInt(localStorage.getItem("highScore") as string) || 0;
+    });
+    setDictionary([]);
+  };
+
+  const handleReturnHome = () => {
+    setIsActive(false);
+    setIsGameOver(false);
+  };
+
+  // Sets the new highscore dynamically when score changes
+  useEffect(() => {
+    if (score > highScore) {
+      localStorage.setItem("highScore", score.toString());
+    }
+  }, [score]);
+
+  useEffect(() => {
+    if (!timerRunning) return;
+    // If timer reaches 0 stop
+    if (timeLeft <= 0) {
+      setIsActive(true);
+      setIsGameOver(true);
+      return;
+    }
+
+    // Runs one instance of setInterval which runs for one second
+    const intervalId = setInterval(() => {
+      setTimeLeft((time) => time - 1);
+    }, 1000);
+
+    // When a new setInterval is called the previous one is cleared
+    return () => clearInterval(intervalId);
+  }, [timeLeft]);
+
+  return (
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Navbar />
+      <Box
+        sx={{
+          display: "flex",
+          flex: 1,
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {/* Render for non active game */}
+        {!isActive && !isViewing && !isGameOver && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Typography variant="h3">Memory Dictionary</Typography>
+            <Button
+              variant="contained"
+              sx={{
+                width: "150px",
+                margin: "0 auto",
+              }}
+              onClick={handleNewGame}
+            >
+              Start Game
+            </Button>
+          </Box>
+        )}
+
+        {/* Render for active game */}
+        {isActive && !isGameOver && (
+          <Box>
+            <Typography variant="h5">{currWord}</Typography>
+            <Typography variant="h6">Score: {score}</Typography>
+            <Typography variant="h6">Lives: {lives}</Typography>
+            <Typography variant="h6">Views Remaining: {hints}</Typography>
+            <Typography variant="h6">Time Left: {timeLeft}</Typography>
+
+            <Button variant="contained" onClick={handleAdd}>
+              Add
+            </Button>
+            <Button variant="contained" onClick={handleSeen}>
+              Seen
+            </Button>
+            <Button variant="contained" onClick={handleView}>
+              View Dictionary
+            </Button>
+          </Box>
+        )}
+
+        {/* Render for hint state */}
+        {!isActive && isViewing && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Box
+              sx={{
+                width: "150px",
+                height: "200px",
+                border: "1px solid black",
+                textAlign: "center",
+                overflowY: "auto",
+              }}
+            >
+              {dictionary.map((item, index) => (
+                <Typography variant="h6" key={index}>
+                  {item}
+                </Typography>
+              ))}
+            </Box>
+            <Button
+              variant="contained"
+              sx={{ width: "20px", margin: "0 auto" }}
+              onClick={handleViewClose}
+            >
+              Close
+            </Button>
+          </Box>
+        )}
+
+        {/* Render for Game Over */}
+        {isActive && isGameOver && (
+          <Box>
+            <Typography variant="h3">Game Over!</Typography>
+            <Typography variant="h5">
+              {score > highScore
+                ? `New High score: ${score}`
+                : `Score: ${score}`}
+            </Typography>
+            <Button variant="contained" onClick={handleNewGame}>
+              New Game
+            </Button>
+            <Button variant="contained" onClick={handleReturnHome}>
+              Return to Home
+            </Button>
+          </Box>
+        )}
+      </Box>
+    </Box>
+  );
+}
