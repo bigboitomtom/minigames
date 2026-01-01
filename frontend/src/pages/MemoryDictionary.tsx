@@ -1,7 +1,8 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import { Navbar } from "../components/Navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { generate } from "random-words";
+import { useNavigate } from "react-router-dom";
 
 const DEFAULT_SCORE = 0;
 const DEFAULT_LIVES = 3;
@@ -32,6 +33,7 @@ const generateNewWord = (dictionary: string[]): string => {
 };
 
 export function MemoryDictionary() {
+  const navigate = useNavigate();
   const [isActive, setIsActive] = useState<boolean>(false);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isViewing, setIsViewing] = useState<boolean>(false);
@@ -49,6 +51,8 @@ export function MemoryDictionary() {
   const [timeLeft, setTimeLeft] = useState<number>(DEFAULT_TIME);
   const [timerRunning, setTimerRunning] = useState<boolean>(true);
 
+  const seenWords = useRef<Set<string>>(new Set());
+
   const processAnswer = (isMistake: boolean): void => {
     if (isMistake) {
       const newLives = lives - 1;
@@ -60,7 +64,11 @@ export function MemoryDictionary() {
     } else {
       setScore(score + 1);
     }
-    setDictionary([...dictionary, currWord]);
+
+    if (!seenWords.current.has(currWord)) {
+      setDictionary([...dictionary, currWord]);
+      seenWords.current.add(currWord);
+    }
     setCurrWord(generateNewWord(dictionary));
     setTimeLeft(DEFAULT_TIME);
   };
@@ -117,23 +125,23 @@ export function MemoryDictionary() {
     }
   }, [score]);
 
-  useEffect(() => {
-    if (!timerRunning) return;
-    // If timer reaches 0 stop
-    if (timeLeft <= 0) {
-      setIsActive(true);
-      setIsGameOver(true);
-      return;
-    }
+  // useEffect(() => {
+  //   if (!timerRunning) return;
+  //   // If timer reaches 0 stop
+  //   if (timeLeft <= 0) {
+  //     setIsActive(true);
+  //     setIsGameOver(true);
+  //     return;
+  //   }
 
-    // Runs one instance of setInterval which runs for one second
-    const intervalId = setInterval(() => {
-      setTimeLeft((time) => time - 1);
-    }, 1000);
+  //   // Runs one instance of setInterval which runs for one second
+  //   const intervalId = setInterval(() => {
+  //     setTimeLeft((time) => time - 1);
+  //   }, 1000);
 
-    // When a new setInterval is called the previous one is cleared
-    return () => clearInterval(intervalId);
-  }, [timeLeft]);
+  //   // When a new setInterval is called the previous one is cleared
+  //   return () => clearInterval(intervalId);
+  // }, [timeLeft]);
 
   return (
     <Box
@@ -162,16 +170,30 @@ export function MemoryDictionary() {
             }}
           >
             <Typography variant="h3">Memory Dictionary</Typography>
-            <Button
-              variant="contained"
+            <Box
               sx={{
-                width: "150px",
+                display: "flex",
                 margin: "0 auto",
+                gap: "10px",
               }}
-              onClick={handleNewGame}
             >
-              Start Game
-            </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  width: "150px",
+                  margin: "0 auto",
+                }}
+                onClick={handleNewGame}
+              >
+                Start Game
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => navigate("/leaderboard/memorydictionary")}
+              >
+                View Leaderboard
+              </Button>
+            </Box>
           </Box>
         )}
 
@@ -206,18 +228,22 @@ export function MemoryDictionary() {
           >
             <Box
               sx={{
-                width: "150px",
+                width: "200px",
                 height: "200px",
                 border: "1px solid black",
                 textAlign: "center",
                 overflowY: "auto",
               }}
             >
-              {dictionary.map((item, index) => (
-                <Typography variant="h6" key={index}>
-                  {item}
-                </Typography>
-              ))}
+              <Grid container spacing={2}>
+                {dictionary.map((item, index) => (
+                  <Grid size={4}>
+                    <Typography variant="h6" key={index}>
+                      {item}
+                    </Typography>
+                  </Grid>
+                ))}
+              </Grid>
             </Box>
             <Button
               variant="contained"
