@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { Navbar } from "../components/Navbar";
 import { useEffect, useRef, useState } from "react";
 import { generate } from "random-words";
@@ -8,6 +8,12 @@ const DEFAULT_SCORE = 0;
 const DEFAULT_LIVES = 3;
 const DEFAULT_HINTS = 5;
 const DEFAULT_TIME = 10;
+
+type entry = {
+  name: string;
+  score: number;
+  timeCreated: Date;
+};
 
 const generateNewWord = (dictionary: string[]): string => {
   if (dictionary.length === 0) {
@@ -50,6 +56,9 @@ export function MemoryDictionary() {
 
   const [timeLeft, setTimeLeft] = useState<number>(DEFAULT_TIME);
   const [timerRunning, setTimerRunning] = useState<boolean>(true);
+
+  const [newRanking, setNewRanking] = useState<boolean>(false);
+  const [rankName, setRankName] = useState<string>("");
 
   const seenWords = useRef<Set<string>>(new Set());
 
@@ -118,6 +127,30 @@ export function MemoryDictionary() {
     setIsGameOver(false);
   };
 
+  const handleNewRanking = async () => {
+    if (!rankName || rankName === "") {
+      alert("Plase enter a name!");
+      return;
+    }
+
+    try {
+      await fetch("http://localhost:5000/games/leaderboard/memorydictionary", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          name: rankName,
+          score: score,
+          timeCreated: Date.now(),
+        }),
+      });
+      setNewRanking(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   // Sets the new highscore dynamically when score changes
   useEffect(() => {
     if (score > highScore) {
@@ -142,6 +175,33 @@ export function MemoryDictionary() {
   //   // When a new setInterval is called the previous one is cleared
   //   return () => clearInterval(intervalId);
   // }, [timeLeft]);
+
+  useEffect(() => {
+    // Ensures the fetch is only ran when game is finished
+    if (!isGameOver) return;
+
+    const getLeaderboard = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:5000/games/leaderboard/memorydictionary",
+          {
+            method: "GET",
+            headers: {
+              "Content-type": "application/json",
+            },
+          }
+        );
+
+        const data = await res.json();  
+        if (!data || data.some((entry: entry) => entry.score < score)) {
+          setNewRanking(true);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getLeaderboard();
+  }, [isGameOver]);
 
   return (
     <Box
@@ -264,6 +324,19 @@ export function MemoryDictionary() {
                 ? `New High score: ${score}`
                 : `Score: ${score}`}
             </Typography>
+            {newRanking && (
+              <Box>
+                <TextField
+                  variant="outlined"
+                  onChange={(event) => setRankName(event.target.value)}
+                >
+                  Enter Name
+                </TextField>
+                <Button variant="contained" onClick={handleNewRanking}>
+                  Submit
+                </Button>
+              </Box>
+            )}
             <Button variant="contained" onClick={handleNewGame}>
               New Game
             </Button>

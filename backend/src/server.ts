@@ -26,7 +26,7 @@ app.get("/games/leaderboard/memorydictionary", (req: Request, res: Response) => 
   try {
     return res.json(getLeaderboard());
   } catch (err) {
-    return res.status(401).json({ error: (err as Error).message });
+    return res.status(500).json({ error: (err as Error).message });
   }
 });
 

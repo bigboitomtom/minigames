@@ -1,6 +1,14 @@
-// import { useParams } from "react-router-dom";
-
-import { Box, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { Navbar } from "../components/Navbar";
 import { useEffect, useState } from "react";
 
@@ -11,8 +19,8 @@ type entry = {
 };
 
 export function Leaderboard() {
-  // const gameType = useParams();
   const [rankings, setRankings] = useState<Array<entry>>([]);
+  const [isEmpty, setIsEmpty] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -28,6 +36,7 @@ export function Leaderboard() {
       );
 
       const data = await res.json();
+      if (!data) setIsEmpty(true);
       setRankings(data);
       setLoading(false);
     };
@@ -53,31 +62,35 @@ export function Leaderboard() {
           alignItems: "center",
         }}
       >
-        {loading && <Typography variant="h5">Loading Leaderboard...</Typography>}
+        {loading && (
+          <Typography variant="h5">Loading Leaderboard...</Typography>
+        )}
         {!loading && (
           <Box>
             <Typography variant="h4">Memory Dictionary Leaderboard</Typography>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">Rank</TableCell>
-                    <TableCell align="center">Name</TableCell>
-                    <TableCell align="center">Row</TableCell>
-                  </TableRow>
-                </TableHead>
-
-                <TableBody>
-                  {rankings.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell align="center">{index + 1}</TableCell>
-                      <TableCell align="center">{item.name}</TableCell>
-                      <TableCell align="center">{item.score}</TableCell>
+            {!isEmpty ? (
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">Rank</TableCell>
+                      <TableCell align="center">Name</TableCell>
+                      <TableCell align="center">Row</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+
+                  <TableBody>
+                    {rankings.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell align="center">{index + 1}</TableCell>
+                        <TableCell align="center">{item.name}</TableCell>
+                        <TableCell align="center">{item.score}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : <Typography variant="h6">Leaderboard Empty</Typography>}
           </Box>
         )}
       </Box>
