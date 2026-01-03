@@ -1,6 +1,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import { Navbar } from "../components/Navbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import img1 from "../assets/shrek1.png";
 import img2 from "../assets/shrek2.png";
 import img3 from "../assets/shrek3.png";
@@ -9,6 +9,18 @@ import img5 from "../assets/shrek5.png";
 import img6 from "../assets/shrek6.png";
 import img7 from "../assets/shrek7.png";
 import img8 from "../assets/shrek8.png";
+
+const imgs: string[] = [
+  img1,
+  img2,
+  img3,
+  img4,
+  img5,
+  img6,
+  img7,
+  img8,
+  null as any,
+];
 
 const shuffleArray = (arr: string[]): string[][] => {
   let currIndex: number = arr.length;
@@ -68,20 +80,13 @@ const findAdjImgs = (arr: string[][]): string[] => {
 export function SlidingTiles() {
   const [isActive, setIsActive] = useState<boolean>(false);
   const [displayImgs, setDisplayImgs] = useState<string[][]>([]);
+  const [timeRunning, setTimeRunning] = useState<number>(-1);
 
   const handleNewGame = () => {
-    const imgs: string[] = [
-      img1,
-      img2,
-      img3,
-      img4,
-      img5,
-      img6,
-      img7,
-      img8,
-      null as any,
-    ];
     setDisplayImgs(shuffleArray(imgs));
+
+    // Start the timer
+    setTimeRunning(0);
     setIsActive(true);
   };
 
@@ -98,6 +103,22 @@ export function SlidingTiles() {
       setDisplayImgs(newArr);
     }
   };
+
+  const handleReset = () => {
+    setDisplayImgs(shuffleArray(imgs));
+
+    // Reset timer
+    setTimeRunning(0);
+  };
+
+  // Timer for active game
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTimeRunning(timeRunning + 1);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [timeRunning]);
 
   return (
     <Box
@@ -149,33 +170,37 @@ export function SlidingTiles() {
           </Box>
         )}
         {isActive && (
-          <Box
-            tabIndex={0}
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 150px)",
-              justifyContent: "center",
-            }}
-          >
-            {displayImgs.map((row, rowIndex) => (
-              <Box key={rowIndex}>
-                {row.map((item: string, i: number) => (
-                  <Box
-                    key={i}
-                    sx={{
-                      width: "150px",
-                      height: "150px",
-                      border: "1px solid black",
-                      aspectRatio: "1 / 1",
-                      margin: "0 auto",
-                    }}
-                    onClick={() => handleImgClick(rowIndex, i)}
-                  >
-                    <img src={item} />
-                  </Box>
-                ))}
-              </Box>
-            ))}
+          <Box>
+            <Typography variant="h5">Time: {timeRunning}</Typography>
+            <Button variant="contained" onClick={handleReset}>Reset</Button>
+            <Box
+              tabIndex={0}
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 150px)",
+                justifyContent: "center",
+              }}
+            >
+              {displayImgs.map((row, rowIndex) => (
+                <Box key={rowIndex}>
+                  {row.map((item: string, i: number) => (
+                    <Box
+                      key={i}
+                      sx={{
+                        width: "150px",
+                        height: "150px",
+                        border: "1px solid black",
+                        aspectRatio: "1 / 1",
+                        margin: "0 auto",
+                      }}
+                      onClick={() => handleImgClick(rowIndex, i)}
+                    >
+                      <img src={item} />
+                    </Box>
+                  ))}
+                </Box>
+              ))}
+            </Box>
           </Box>
         )}
       </Box>
