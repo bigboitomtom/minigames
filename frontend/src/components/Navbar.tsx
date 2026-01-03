@@ -61,6 +61,7 @@ export function Navbar() {
             color: "#fff",
             border: "1px solid #fff",
           }}
+          onClick={() => navigate("/game/slidingtiles")}
         >
           <Typography variant="body1">Sliding Tiles</Typography>
         </Button>
