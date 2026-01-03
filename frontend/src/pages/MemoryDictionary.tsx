@@ -158,23 +158,23 @@ export function MemoryDictionary() {
     }
   }, [score]);
 
-  // useEffect(() => {
-  //   if (!timerRunning) return;
-  //   // If timer reaches 0 stop
-  //   if (timeLeft <= 0) {
-  //     setIsActive(true);
-  //     setIsGameOver(true);
-  //     return;
-  //   }
+  useEffect(() => {
+    if (!timerRunning) return;
+    // If timer reaches 0 stop
+    if (timeLeft <= 0) {
+      setIsActive(true);
+      setIsGameOver(true);
+      return;
+    }
 
-  //   // Runs one instance of setInterval which runs for one second
-  //   const intervalId = setInterval(() => {
-  //     setTimeLeft((time) => time - 1);
-  //   }, 1000);
+    // Runs one instance of setInterval which runs for one second
+    const intervalId = setInterval(() => {
+      setTimeLeft((time) => time - 1);
+    }, 1000);
 
-  //   // When a new setInterval is called the previous one is cleared
-  //   return () => clearInterval(intervalId);
-  // }, [timeLeft]);
+    // When a new setInterval is called the previous one is cleared
+    return () => clearInterval(intervalId);
+  }, [timeLeft]);
 
   useEffect(() => {
     // Ensures the fetch is only ran when game is finished
@@ -326,6 +326,7 @@ export function MemoryDictionary() {
             </Typography>
             {newRanking && (
               <Box>
+                <Typography variant="h5">You made it to the leaderboard!</Typography>
                 <TextField
                   variant="outlined"
                   onChange={(event) => setRankName(event.target.value)}
