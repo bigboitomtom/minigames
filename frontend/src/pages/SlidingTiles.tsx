@@ -22,7 +22,13 @@ const imgs: string[] = [
   null as any,
 ];
 
-const shuffleArray = (arr: string[]): string[][] => {
+const solved: string[][] = [
+  [img1, img4, img7], [img2, img5, img8], [img3, img6, null as any]
+]
+
+
+// Some shuffles arent solvable
+const shuffleBoard = (arr: string[]): string[][] => {
   let currIndex: number = arr.length;
   let randIndex: number;
 
@@ -33,14 +39,60 @@ const shuffleArray = (arr: string[]): string[][] => {
     [arr[currIndex], arr[randIndex]] = [arr[randIndex], arr[currIndex]];
   }
 
+  const inversions = countInversions(arr);
+  // Odd inversions is considered solvable, due to array display structure
+  if (inversions % 2 === 0) {
+    // If not solvable on first shuffle, force a solvable puzzle
+    console.log("not solvable");
+    const temp = arr[8];
+    arr[8] = arr[5];
+    arr[5] = temp;
+    console.log("final arr:", arr);
+  }
+
+  const newArr: string[][] = convert1dTo2d(arr);
+  return newArr;
+};
+
+const countInversions = (arr: string[]) => {
+  // Remove blank tile
+  const regex = /\d+/;
+  const tiles = arr.filter((x) => x !== null);
+  const tileNumbers = tiles.map((x) => {
+    const match = x.match(regex) as RegExpMatchArray;
+    if (!match) {
+      throw new Error(`invalid tile: ${x}`);
+    }
+    // Converts into number
+    return Number(match[0]);
+  })
+  
+  
+  console.log(arr);
+  console.log(tileNumbers);
+  
+  // Count inversions
+  // Odd inversions is considered solvable, due to array display structure
+  let inversions = 0;
+  for (let i = 0; i < tileNumbers.length; i++) {
+    for (let j = i + 1; j < tileNumbers.length; j++) {
+      if (tileNumbers[i] > tileNumbers[j]) {
+        inversions++;
+      }
+    }
+  }
+  console.log(inversions);
+  return inversions;
+}
+
+const convert1dTo2d = (arr: string[]): string[][] => {
   const newArr: string[][] = [];
   for (let i = 0; i < arr.length; i += 3) {
     const subArr: string[] = [arr[i], arr[i + 1], arr[i + 2]];
     newArr.push(subArr);
   }
-
   return newArr;
-};
+}
 
 const findNullPos = (arr: string[][]) => {
   let nullPos = null;
@@ -83,7 +135,7 @@ export function SlidingTiles() {
   const [timeRunning, setTimeRunning] = useState<number>(-1);
 
   const handleNewGame = () => {
-    setDisplayImgs(shuffleArray(imgs));
+    setDisplayImgs(shuffleBoard(imgs));
 
     // Start the timer
     setTimeRunning(0);
@@ -105,7 +157,7 @@ export function SlidingTiles() {
   };
 
   const handleReset = () => {
-    setDisplayImgs(shuffleArray(imgs));
+    setDisplayImgs(shuffleBoard(imgs));
 
     // Reset timer
     setTimeRunning(0);
@@ -113,12 +165,21 @@ export function SlidingTiles() {
 
   // Timer for active game
   useEffect(() => {
+    if (!isActive) return;
+
     const intervalId = setInterval(() => {
       setTimeRunning(timeRunning + 1);
     }, 1000);
 
     return () => clearInterval(intervalId);
   }, [timeRunning]);
+
+  useEffect(() => {
+    if (displayImgs === solved) {
+      alert("Solved");
+      setIsActive(false);
+    }
+  }, [displayImgs]);
 
   return (
     <Box
