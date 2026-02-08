@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, TableRow, Typography } from "@mui/material";
 import { Navbar } from "../components/Navbar";
 import { useEffect, useState } from "react";
 import img1 from "../assets/shrek1.png";
@@ -29,29 +29,30 @@ const solved: string[][] = [
 
 // Some shuffles arent solvable
 const shuffleBoard = (arr: string[]): string[][] => {
-  let currIndex: number = arr.length;
-  let randIndex: number;
+  // let currIndex: number = arr.length;
+  // let randIndex: number;
 
-  while (currIndex !== 0) {
-    randIndex = Math.floor(Math.random() * currIndex);
-    currIndex--;
+  // while (currIndex !== 0) {
+  //   randIndex = Math.floor(Math.random() * currIndex);
+  //   currIndex--;
 
-    [arr[currIndex], arr[randIndex]] = [arr[randIndex], arr[currIndex]];
-  }
+  //   [arr[currIndex], arr[randIndex]] = [arr[randIndex], arr[currIndex]];
+  // }
 
-  const inversions = countInversions(arr);
-  // Odd inversions is considered solvable, due to array display structure
-  if (inversions % 2 === 0) {
-    // If not solvable on first shuffle, force a solvable puzzle
-    console.log("not solvable");
-    const temp = arr[8];
-    arr[8] = arr[5];
-    arr[5] = temp;
-    console.log("final arr:", arr);
-  }
+  // const inversions = countInversions(arr);
+  // // Odd inversions is considered solvable, due to array display structure
+  // if (inversions % 2 === 0) {
+  //   // If not solvable on first shuffle, force a solvable puzzle
+  //   const temp = arr[8];
+  //   arr[8] = arr[5];
+  //   arr[5] = temp;
+  // }
 
-  const newArr: string[][] = convert1dTo2d(arr);
-  return newArr;
+  // const newArr: string[][] = convert1dTo2d(arr);
+
+  const test: string[][] = [[img1, img4, img7], [img2, img5, img8], [img3, null as any, img6]];
+  return test;
+  // return newArr;
 };
 
 const countInversions = (arr: string[]) => {
@@ -67,10 +68,6 @@ const countInversions = (arr: string[]) => {
     return Number(match[0]);
   })
   
-  
-  console.log(arr);
-  console.log(tileNumbers);
-  
   // Count inversions
   // Odd inversions is considered solvable, due to array display structure
   let inversions = 0;
@@ -81,7 +78,6 @@ const countInversions = (arr: string[]) => {
       }
     }
   }
-  console.log(inversions);
   return inversions;
 }
 
@@ -131,6 +127,7 @@ const findAdjImgs = (arr: string[][]): string[] => {
 
 export function SlidingTiles() {
   const [isActive, setIsActive] = useState<boolean>(false);
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [displayImgs, setDisplayImgs] = useState<string[][]>([]);
   const [timeRunning, setTimeRunning] = useState<number>(-1);
 
@@ -140,6 +137,10 @@ export function SlidingTiles() {
     // Start the timer
     setTimeRunning(0);
     setIsActive(true);
+  };
+
+  const testSolved = () => {
+    setDisplayImgs(solved);
   };
 
   const handleImgClick = (rowIndex: number, i: number): void => {
@@ -161,11 +162,13 @@ export function SlidingTiles() {
 
     // Reset timer
     setTimeRunning(0);
+    setIsGameOver(false);
   };
 
   // Timer for active game
   useEffect(() => {
     if (!isActive) return;
+    if (isGameOver) return;
 
     const intervalId = setInterval(() => {
       setTimeRunning(timeRunning + 1);
@@ -175,9 +178,15 @@ export function SlidingTiles() {
   }, [timeRunning]);
 
   useEffect(() => {
-    if (displayImgs === solved) {
+    if (!isActive) return;
+
+    const isSolved = displayImgs.every((row, rowIndex) => {
+      return row.every((cell, colIndex) => cell === solved[rowIndex][colIndex]);
+    })
+    if (isSolved) {
       alert("Solved");
-      setIsActive(false);
+      setIsGameOver(true);
+
     }
   }, [displayImgs]);
 
@@ -232,14 +241,20 @@ export function SlidingTiles() {
         )}
         {isActive && (
           <Box>
+            {isGameOver && (<Typography variant="h5">Game Over</Typography>)}
             <Typography variant="h5">Time: {timeRunning}</Typography>
-            <Button variant="contained" onClick={handleReset}>Reset</Button>
+            {!isGameOver && (
+              <Button variant="contained" onClick={handleReset}>Reset</Button>
+            )}
+            {isGameOver && (<Button variant="contained" onClick={handleReset}>New Game</Button>)}
+            <Button variant="contained" onClick={testSolved}>Solve</Button>
             <Box
               tabIndex={0}
               sx={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 150px)",
                 justifyContent: "center",
+                marginTop: "10px"
               }}
             >
               {displayImgs.map((row, rowIndex) => (
