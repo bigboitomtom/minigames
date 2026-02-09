@@ -15,7 +15,10 @@ type entry = {
   timeCreated: Date;
 };
 
-const generateNewWord = (dictionary: string[]): string => {
+const generateNewWord = (
+  dictionary: string[],
+  prevWord: string,
+): string => {
   if (dictionary.length === 0) {
     return generate({ maxLength: 3 }) as string;
   }
@@ -25,17 +28,22 @@ const generateNewWord = (dictionary: string[]): string => {
 
   console.log("index", repeatIndex);
 
-  if (dictionary.length <= 15 && prob <= 0.2) {
-    return dictionary[repeatIndex];
-  } else if (dictionary.length <= 25 && prob <= 0.3) {
-    return dictionary[repeatIndex];
-  } else if (dictionary.length <= 35 && prob <= 0.4) {
-    return dictionary[repeatIndex];
-  } else if (dictionary.length > 35 && prob <= 0.5) {
-    return dictionary[repeatIndex];
-  } else {
-    return generate({ maxLength: 3 }) as string;
+  let currWord: string = generate({ maxLength: 3 }) as string;
+  while (true) {
+    if (dictionary.length <= 15 && prob <= 0.2) {
+      currWord = dictionary[repeatIndex];
+    } else if (dictionary.length <= 25 && prob <= 0.3) {
+      currWord = dictionary[repeatIndex];
+    } else if (dictionary.length <= 35 && prob <= 0.4) {
+      currWord = dictionary[repeatIndex];
+    } else if (dictionary.length > 35 && prob <= 0.5) {
+      currWord = dictionary[repeatIndex];
+    }
+
+    if (prevWord !== currWord) break;
   }
+
+  return currWord;
 };
 
 export function MemoryDictionary() {
@@ -44,7 +52,7 @@ export function MemoryDictionary() {
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isViewing, setIsViewing] = useState<boolean>(false);
   const [currWord, setCurrWord] = useState<string>(
-    generate({ maxLength: 3 }) as string
+    generate({ maxLength: 3 }) as string,
   );
   const [score, setScore] = useState<number>(DEFAULT_SCORE);
   const [highScore, setHighScore] = useState<number>(() => {
@@ -78,7 +86,7 @@ export function MemoryDictionary() {
       setDictionary([...dictionary, currWord]);
       seenWords.current.add(currWord);
     }
-    setCurrWord(generateNewWord(dictionary));
+    setCurrWord(generateNewWord(dictionary, currWord));
     setTimeLeft(DEFAULT_TIME);
   };
 
@@ -189,10 +197,10 @@ export function MemoryDictionary() {
             headers: {
               "Content-type": "application/json",
             },
-          }
+          },
         );
 
-        const data = await res.json();  
+        const data = await res.json();
         if (!data || data.some((entry: entry) => entry.score < score)) {
           setNewRanking(true);
         }
@@ -326,7 +334,9 @@ export function MemoryDictionary() {
             </Typography>
             {newRanking && (
               <Box>
-                <Typography variant="h5">You made it to the leaderboard!</Typography>
+                <Typography variant="h5">
+                  You made it to the leaderboard!
+                </Typography>
                 <TextField
                   variant="outlined"
                   onChange={(event) => setRankName(event.target.value)}
