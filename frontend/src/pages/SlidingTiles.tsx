@@ -1,6 +1,6 @@
-import { Box, Button, Modal, TableRow, Typography } from "@mui/material";
+import { Box, Button, Modal, Typography } from "@mui/material";
 import { Navbar } from "../components/Navbar";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import img1 from "../assets/shrek1.png";
 import img2 from "../assets/shrek2.png";
 import img3 from "../assets/shrek3.png";
