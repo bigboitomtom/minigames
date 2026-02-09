@@ -31,34 +31,34 @@ const solved: string[][] = [
 
 // Some shuffles arent solvable
 const shuffleBoard = (arr: string[]): string[][] => {
-  // let currIndex: number = arr.length;
-  // let randIndex: number;
+  let currIndex: number = arr.length;
+  let randIndex: number;
 
-  // while (currIndex !== 0) {
-  //   randIndex = Math.floor(Math.random() * currIndex);
-  //   currIndex--;
+  while (currIndex !== 0) {
+    randIndex = Math.floor(Math.random() * currIndex);
+    currIndex--;
 
-  //   [arr[currIndex], arr[randIndex]] = [arr[randIndex], arr[currIndex]];
-  // }
+    [arr[currIndex], arr[randIndex]] = [arr[randIndex], arr[currIndex]];
+  }
 
-  // const inversions = countInversions(arr);
-  // // Odd inversions is considered solvable, due to array display structure
-  // if (inversions % 2 === 0) {
-  //   // If not solvable on first shuffle, force a solvable puzzle
-  //   const temp = arr[8];
-  //   arr[8] = arr[5];
-  //   arr[5] = temp;
-  // }
+  const inversions = countInversions(arr);
+  // Odd inversions is considered solvable, due to array display structure
+  if (inversions % 2 === 0) {
+    // If not solvable on first shuffle, force a solvable puzzle
+    const temp = arr[8];
+    arr[8] = arr[5];
+    arr[5] = temp;
+  }
 
-  // const newArr: string[][] = convert1dTo2d(arr);
+  // const test: string[][] = [
+  //   [img1, img4, img7],
+  //   [img2, img5, img8],
+  //   [img3, null as any, img6],
+  // ];
+  // return test;
+  const newArr: string[][] = convert1dTo2d(arr);
 
-  const test: string[][] = [
-    [img1, img4, img7],
-    [img2, img5, img8],
-    [img3, null as any, img6],
-  ];
-  return test;
-  // return newArr;
+  return newArr;
 };
 
 const countInversions = (arr: string[]) => {
