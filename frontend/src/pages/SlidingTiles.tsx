@@ -1,6 +1,6 @@
 import { Box, Button, Modal, TableRow, Typography } from "@mui/material";
 import { Navbar } from "../components/Navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import img1 from "../assets/shrek1.png";
 import img2 from "../assets/shrek2.png";
 import img3 from "../assets/shrek3.png";
@@ -142,18 +142,6 @@ export function SlidingTiles() {
   } | null>(null);
   const [timeRunning, setTimeRunning] = useState<number>(-1);
 
-  const handleNewGame = () => {
-    setDisplayImgs(shuffleBoard(imgs));
-
-    // Start the timer
-    setTimeRunning(0);
-    setIsActive(true);
-  };
-
-  const testSolved = () => {
-    setDisplayImgs(solved);
-  };
-
   const handleImgClick = (rowIndex: number, i: number): void => {
     if (isGameOver) return;
     const selectedImg = displayImgs[rowIndex][i];
@@ -175,6 +163,7 @@ export function SlidingTiles() {
     // Reset timer
     setTimeRunning(0);
     setIsGameOver(false);
+    setIsActive(true);
   };
 
   const handleModalOpen = () => setIsHelp(true);
@@ -182,16 +171,16 @@ export function SlidingTiles() {
 
   // Timer for active game
   useEffect(() => {
-    if (!isActive) return;
-    if (isGameOver) return;
+    if (!isActive || isGameOver) return;
 
     const intervalId = setInterval(() => {
       setTimeRunning(timeRunning + 1);
     }, 1000);
 
-    return () => clearInterval(intervalId);
+    return () => clearInterval(intervalId)
   }, [timeRunning]);
 
+  // Check for winning game
   useEffect(() => {
     if (!isActive) return;
 
@@ -199,7 +188,6 @@ export function SlidingTiles() {
       return row.every((cell, colIndex) => cell === solved[rowIndex][colIndex]);
     });
     if (isSolved) {
-      alert("Solved");
       setIsGameOver(true);
     }
   }, [displayImgs]);
@@ -245,11 +233,11 @@ export function SlidingTiles() {
                   width: "150px",
                   margin: "0 auto",
                 }}
-                onClick={handleNewGame}
+                onClick={handleReset}
               >
                 Start Game
               </Button>
-              <Button variant="contained">View Leaderboard</Button>
+              <Button variant="contained" disabled>View Leaderboard</Button>
             </Box>
           </Box>
         )}
@@ -258,7 +246,7 @@ export function SlidingTiles() {
             {isGameOver && <Typography variant="h5">Game Over</Typography>}
             <Typography variant="h5">Time: {timeRunning}</Typography>
             {!isGameOver && (
-              <Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Button variant="contained" onClick={handleReset}>
                   Reset
                 </Button>
@@ -296,9 +284,9 @@ export function SlidingTiles() {
                 New Game
               </Button>
             )}
-            <Button variant="contained" onClick={testSolved}>
+            {/* <Button variant="contained" onClick={testSolved}>
               Solve
-            </Button>
+            </Button> */}
             <Box
               tabIndex={0}
               sx={{

@@ -15,10 +15,7 @@ type entry = {
   timeCreated: Date;
 };
 
-const generateNewWord = (
-  dictionary: string[],
-  prevWord: string,
-): string => {
+const generateNewWord = (dictionary: string[], prevWord: string): string => {
   if (dictionary.length === 0) {
     return generate({ maxLength: 3 }) as string;
   }
@@ -258,6 +255,7 @@ export function MemoryDictionary() {
               <Button
                 variant="contained"
                 onClick={() => navigate("/leaderboard/memorydictionary")}
+                disabled
               >
                 View Leaderboard
               </Button>
