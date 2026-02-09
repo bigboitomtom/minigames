@@ -1,25 +1,8 @@
-import { useState } from "react";
+
 import { Navbar } from "../components/Navbar";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 export function Dashboard() {
-  const [name, setName] = useState<string>("");
-
-  const handleClick = async () => {
-    try {
-      await fetch("http://localhost:5000/games/leaderboard/memorydictionary", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json"
-        },
-        body: JSON.stringify({ name: name, score: 13, timeCreated: Date.now() }),
-      });
-      console.log(name);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   return (
     <Box
       sx={{
@@ -38,12 +21,7 @@ export function Dashboard() {
           alignItems: "center",
         }}
       >
-        <input
-          type="text"
-          placeholder="Enter Name"
-          onChange={(event) => setName(event.target.value)}
-        />
-        <button onClick={handleClick}>Submit</button>
+        <Typography variant="h3">Click a game on the navbar to start!</Typography>
       </Box>
     </Box>
   );
