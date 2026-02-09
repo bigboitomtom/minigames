@@ -1,4 +1,4 @@
-import { Box, Button, TableRow, Typography } from "@mui/material";
+import { Box, Button, Modal, TableRow, Typography } from "@mui/material";
 import { Navbar } from "../components/Navbar";
 import { useEffect, useState } from "react";
 import img1 from "../assets/shrek1.png";
@@ -9,6 +9,7 @@ import img5 from "../assets/shrek5.png";
 import img6 from "../assets/shrek6.png";
 import img7 from "../assets/shrek7.png";
 import img8 from "../assets/shrek8.png";
+import solvedImg from "../assets/solved.png";
 
 const imgs: string[] = [
   img1,
@@ -23,9 +24,10 @@ const imgs: string[] = [
 ];
 
 const solved: string[][] = [
-  [img1, img4, img7], [img2, img5, img8], [img3, img6, null as any]
-]
-
+  [img1, img4, img7],
+  [img2, img5, img8],
+  [img3, img6, null as any],
+];
 
 // Some shuffles arent solvable
 const shuffleBoard = (arr: string[]): string[][] => {
@@ -50,7 +52,11 @@ const shuffleBoard = (arr: string[]): string[][] => {
 
   // const newArr: string[][] = convert1dTo2d(arr);
 
-  const test: string[][] = [[img1, img4, img7], [img2, img5, img8], [img3, null as any, img6]];
+  const test: string[][] = [
+    [img1, img4, img7],
+    [img2, img5, img8],
+    [img3, null as any, img6],
+  ];
   return test;
   // return newArr;
 };
@@ -66,8 +72,8 @@ const countInversions = (arr: string[]) => {
     }
     // Converts into number
     return Number(match[0]);
-  })
-  
+  });
+
   // Count inversions
   // Odd inversions is considered solvable, due to array display structure
   let inversions = 0;
@@ -79,7 +85,7 @@ const countInversions = (arr: string[]) => {
     }
   }
   return inversions;
-}
+};
 
 const convert1dTo2d = (arr: string[]): string[][] => {
   const newArr: string[][] = [];
@@ -88,7 +94,7 @@ const convert1dTo2d = (arr: string[]): string[][] => {
     newArr.push(subArr);
   }
   return newArr;
-}
+};
 
 const findNullPos = (arr: string[][]) => {
   let nullPos = null;
@@ -127,8 +133,13 @@ const findAdjImgs = (arr: string[][]): string[] => {
 
 export function SlidingTiles() {
   const [isActive, setIsActive] = useState<boolean>(false);
+  const [isHelp, setIsHelp] = useState<boolean>(false);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [displayImgs, setDisplayImgs] = useState<string[][]>([]);
+  const [hoveredTile, setHoveredTile] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
   const [timeRunning, setTimeRunning] = useState<number>(-1);
 
   const handleNewGame = () => {
@@ -144,6 +155,7 @@ export function SlidingTiles() {
   };
 
   const handleImgClick = (rowIndex: number, i: number): void => {
+    if (isGameOver) return;
     const selectedImg = displayImgs[rowIndex][i];
     const adjImgs = findAdjImgs(displayImgs);
     if (adjImgs.includes(selectedImg)) {
@@ -165,6 +177,9 @@ export function SlidingTiles() {
     setIsGameOver(false);
   };
 
+  const handleModalOpen = () => setIsHelp(true);
+  const handleModalClose = () => setIsHelp(false);
+
   // Timer for active game
   useEffect(() => {
     if (!isActive) return;
@@ -182,11 +197,10 @@ export function SlidingTiles() {
 
     const isSolved = displayImgs.every((row, rowIndex) => {
       return row.every((cell, colIndex) => cell === solved[rowIndex][colIndex]);
-    })
+    });
     if (isSolved) {
       alert("Solved");
       setIsGameOver(true);
-
     }
   }, [displayImgs]);
 
@@ -241,37 +255,87 @@ export function SlidingTiles() {
         )}
         {isActive && (
           <Box>
-            {isGameOver && (<Typography variant="h5">Game Over</Typography>)}
+            {isGameOver && <Typography variant="h5">Game Over</Typography>}
             <Typography variant="h5">Time: {timeRunning}</Typography>
             {!isGameOver && (
-              <Button variant="contained" onClick={handleReset}>Reset</Button>
+              <Box>
+                <Button variant="contained" onClick={handleReset}>
+                  Reset
+                </Button>
+                <Button variant="contained" onClick={handleModalOpen}>
+                  Help
+                </Button>
+
+                {/* Help Modal */}
+                {isHelp && (
+                  <Modal open={isHelp} onClose={handleModalClose}>
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: 450,
+                        bgcolor: "background.paper",
+                        border: "2px solid #000",
+                        boxShadow: 24,
+                        p: 4,
+                      }}
+                    >
+                      <img
+                        src={solvedImg}
+                        style={{ width: "450px", height: "450px" }}
+                      />
+                    </Box>
+                  </Modal>
+                )}
+              </Box>
             )}
-            {isGameOver && (<Button variant="contained" onClick={handleReset}>New Game</Button>)}
-            <Button variant="contained" onClick={testSolved}>Solve</Button>
+            {isGameOver && (
+              <Button variant="contained" onClick={handleReset}>
+                New Game
+              </Button>
+            )}
+            <Button variant="contained" onClick={testSolved}>
+              Solve
+            </Button>
             <Box
               tabIndex={0}
               sx={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 150px)",
                 justifyContent: "center",
-                marginTop: "10px"
+                border: "2px solid black",
               }}
             >
               {displayImgs.map((row, rowIndex) => (
                 <Box key={rowIndex}>
-                  {row.map((item: string, i: number) => (
+                  {row.map((item: string, colIndex: number) => (
                     <Box
-                      key={i}
+                      key={colIndex}
                       sx={{
                         width: "150px",
                         height: "150px",
-                        border: "1px solid black",
+                        // border: "1px solid black",
                         aspectRatio: "1 / 1",
                         margin: "0 auto",
                       }}
-                      onClick={() => handleImgClick(rowIndex, i)}
+                      onClick={() => handleImgClick(rowIndex, colIndex)}
                     >
-                      <img src={item} />
+                      <img
+                        src={item}
+                        onMouseEnter={() =>
+                          setHoveredTile({ row: rowIndex, col: colIndex })
+                        }
+                        onMouseLeave={() => setHoveredTile(null)}
+                        style={{
+                          filter:
+                            hoveredTile?.row === rowIndex &&
+                            hoveredTile?.col === colIndex
+                              ? "brightness(70%)"
+                              : "brightness(100%)",
+                        }}
+                      />
                     </Box>
                   ))}
                 </Box>
