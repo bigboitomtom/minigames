@@ -23,8 +23,6 @@ const generateNewWord = (dictionary: string[], prevWord: string): string => {
   const prob = Math.random();
   const repeatIndex = Math.floor(Math.random() * (dictionary.length - 1));
 
-  console.log("index", repeatIndex);
-
   let currWord: string = generate({ maxLength: 3 }) as string;
   while (true) {
     if (dictionary.length <= 15 && prob <= 0.2) {
