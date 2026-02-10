@@ -166,15 +166,15 @@ export function MemoryDictionary() {
   useEffect(() => {
     if (!timerRunning) return;
     // If timer reaches 0 stop
-    if (timeLeft <= 0) {
-      setIsActive(true);
-      setIsGameOver(true);
-      return;
-    }
+    // if (timeLeft <= 0) {
+    //   setIsActive(true);
+    //   setIsGameOver(true);
+    //   return;
+    // }
 
     // Runs one instance of setInterval which runs for one second
     const intervalId = setInterval(() => {
-      setTimeLeft((time) => time - 1);
+      setTimeLeft(timeLeft - 1);
     }, 1000);
 
     // When a new setInterval is called the previous one is cleared
@@ -232,6 +232,7 @@ export function MemoryDictionary() {
             sx={{
               display: "flex",
               flexDirection: "column",
+              rowGap: "10px"
             }}
           >
             <Typography variant="h3">Memory Dictionary</Typography>
@@ -266,21 +267,39 @@ export function MemoryDictionary() {
         {/* Render for active game */}
         {isActive && !isGameOver && (
           <Box>
-            <Typography variant="h5">{currWord}</Typography>
-            <Typography variant="h6">Score: {score}</Typography>
-            <Typography variant="h6">Lives: {lives}</Typography>
-            <Typography variant="h6">Views Remaining: {hints}</Typography>
+            <Box sx={{display: "flex", flexDirection: "row", gap: "50px"}}>
+
+              <Typography variant="h6">Score: {score}</Typography>
+              <Typography variant="h6">Lives: {lives}</Typography>
+              <Typography variant="h6">Views Remaining: {hints}</Typography>
+
+            </Box>
             <Typography variant="h6">Time Left: {timeLeft}</Typography>
 
-            <Button variant="contained" onClick={handleAdd}>
-              Add
-            </Button>
-            <Button variant="contained" onClick={handleSeen}>
-              Seen
-            </Button>
-            <Button variant="contained" onClick={handleView}>
-              View Dictionary
-            </Button>
+            <Box sx={{margin: "50px"}}>
+              <Typography variant="h3" sx={{ textAlign: "center" }}>
+                {currWord}
+              </Typography>
+            </Box> 
+
+            {/* Interact buttons */}
+            <Box sx={{ display: "flex", flexDirection: "column", rowGap: "10px"}}>
+              <Box sx={{ display: "flex", justifyContent: "space-evenly"}}>
+                <Button variant="contained" onClick={handleAdd}>
+                  Add
+                </Button>
+                <Button variant="contained" onClick={handleSeen}>
+                  Seen
+                </Button>
+              </Box>
+
+              <Box sx={{display: "flex", justifyContent: "center"}}>
+                  <Button variant="contained" onClick={handleView} sx={{ width: "233px"}} disabled={hints <= 0}>
+                    View Dictionary
+                  </Button>
+              </Box>
+            </Box>
+
           </Box>
         )}
 
@@ -290,6 +309,7 @@ export function MemoryDictionary() {
             sx={{
               display: "flex",
               flexDirection: "column",
+              rowGap: "10px"
             }}
           >
             <Box
@@ -313,7 +333,7 @@ export function MemoryDictionary() {
             </Box>
             <Button
               variant="contained"
-              sx={{ width: "20px", margin: "0 auto" }}
+              sx={{ margin: "0 auto" }}
               onClick={handleViewClose}
             >
               Close
@@ -323,13 +343,15 @@ export function MemoryDictionary() {
 
         {/* Render for Game Over */}
         {isActive && isGameOver && (
-          <Box>
-            <Typography variant="h3">Game Over!</Typography>
-            <Typography variant="h5">
+          <Box sx={{display: "flex", flexDirection: "column", rowGap: "10px"}}>
+            <Typography variant="h3" sx={{ textAlign: "center" }}>Game Over!</Typography>
+            <Typography variant="h5" sx={{textAlign: "center" }}>
               {score > highScore
                 ? `New High score: ${score}`
                 : `Score: ${score}`}
             </Typography>
+
+            {/* Adding to leaderboard (backend) */}
             {newRanking && (
               <Box>
                 <Typography variant="h5">
@@ -346,12 +368,15 @@ export function MemoryDictionary() {
                 </Button>
               </Box>
             )}
-            <Button variant="contained" onClick={handleNewGame}>
-              New Game
-            </Button>
-            <Button variant="contained" onClick={handleReturnHome}>
-              Return to Home
-            </Button>
+
+            <Box sx={{ display: "flex", gap: "10px"}}>
+              <Button variant="contained" onClick={handleNewGame}>
+                New Game
+              </Button>
+              <Button variant="contained" onClick={handleReturnHome}>
+                Return to Home
+              </Button>
+            </Box>
           </Box>
         )}
       </Box>
