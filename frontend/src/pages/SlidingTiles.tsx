@@ -10,7 +10,6 @@ import img6 from "../assets/shrek6.png";
 import img7 from "../assets/shrek7.png";
 import img8 from "../assets/shrek8.png";
 import solvedImg from "../assets/solved.png";
-import { useNavigate } from "react-router-dom";
 
 const imgs: string[] = [
   img1,
