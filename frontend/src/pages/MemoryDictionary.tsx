@@ -277,7 +277,7 @@ export function MemoryDictionary() {
             <Typography variant="h6">Time Left: {timeLeft}</Typography>
 
             <Box sx={{margin: "50px"}}>
-              <Typography variant="h3" sx={{ textAlign: "center" }}>
+              <Typography variant="h3" textAlign={"center"}>
                 {currWord}
               </Typography>
             </Box> 
@@ -344,8 +344,8 @@ export function MemoryDictionary() {
         {/* Render for Game Over */}
         {isActive && isGameOver && (
           <Box sx={{display: "flex", flexDirection: "column", rowGap: "10px"}}>
-            <Typography variant="h3" sx={{ textAlign: "center" }}>Game Over!</Typography>
-            <Typography variant="h5" sx={{textAlign: "center" }}>
+            <Typography variant="h3" textAlign={"center"}>Game Over!</Typography>
+            <Typography variant="h5" textAlign={"center"}>
               {score > highScore
                 ? `New High score: ${score}`
                 : `Score: ${score}`}

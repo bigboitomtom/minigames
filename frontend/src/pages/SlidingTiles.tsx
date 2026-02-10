@@ -10,6 +10,7 @@ import img6 from "../assets/shrek6.png";
 import img7 from "../assets/shrek7.png";
 import img8 from "../assets/shrek8.png";
 import solvedImg from "../assets/solved.png";
+import { useNavigate } from "react-router-dom";
 
 const imgs: string[] = [
   img1,
@@ -169,6 +170,10 @@ export function SlidingTiles() {
   const handleModalOpen = () => setIsHelp(true);
   const handleModalClose = () => setIsHelp(false);
 
+  const handleReturnHome = () => {
+    setIsActive(false);
+  }
+
   // Timer for active game
   useEffect(() => {
     if (!isActive || isGameOver) return;
@@ -215,6 +220,7 @@ export function SlidingTiles() {
             sx={{
               display: "flex",
               flexDirection: "column",
+              rowGap: "10px"
             }}
           >
             <Typography variant="h3" textAlign={"center"}>
@@ -241,10 +247,12 @@ export function SlidingTiles() {
             </Box>
           </Box>
         )}
+
+        {/* Render active game */}
         {isActive && (
-          <Box>
-            {isGameOver && <Typography variant="h5">Game Over</Typography>}
-            <Typography variant="h5">Time: {timeRunning}</Typography>
+          <Box sx={{display: "flex", flexDirection: "column", rowGap: "10px" }}>
+            {isGameOver && <Typography variant="h5" textAlign={"center"}>Game Over</Typography>}
+            <Typography variant="h5" textAlign={"center"}>Time: {timeRunning}</Typography>
             {!isGameOver && (
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Button variant="contained" onClick={handleReset}>
@@ -279,14 +287,16 @@ export function SlidingTiles() {
                 )}
               </Box>
             )}
+
             {isGameOver && (
-              <Button variant="contained" onClick={handleReset}>
-                New Game
-              </Button>
+              <Box sx={{display: "flex", justifyContent: "center", gap: "10px" }}>
+                <Button variant="contained" onClick={handleReset}>
+                  New Game
+                </Button>
+                <Button variant="contained" onClick={handleReturnHome}>Return To Home</Button>
+              </Box>
             )}
-            {/* <Button variant="contained" onClick={testSolved}>
-              Solve
-            </Button> */}
+
             <Box
               tabIndex={0}
               sx={{
@@ -304,7 +314,6 @@ export function SlidingTiles() {
                       sx={{
                         width: "150px",
                         height: "150px",
-                        // border: "1px solid black",
                         aspectRatio: "1 / 1",
                         margin: "0 auto",
                       }}
