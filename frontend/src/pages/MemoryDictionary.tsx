@@ -64,6 +64,7 @@ export function MemoryDictionary() {
   const [rankName, setRankName] = useState<string>("");
 
   const seenWords = useRef<Set<string>>(new Set());
+  const lock = useRef<boolean>(false);
 
   const processAnswer = (isMistake: boolean): void => {
     if (isMistake) {
@@ -86,13 +87,27 @@ export function MemoryDictionary() {
   };
 
   const handleAdd = () => {
+    if (lock.current) return;
+    lock.current = true;
+    
     const isMistake = dictionary.includes(currWord);
     processAnswer(isMistake);
+
+    setTimeout(() => {
+      lock.current = false;
+    }, 200);
   };
 
   const handleSeen = () => {
+    if (lock.current) return;
+    lock.current = true;
+
     const isMistake = !dictionary.includes(currWord);
     processAnswer(isMistake);
+
+    setTimeout(() => {
+      lock.current = false;
+    }, 200);
   };
 
   const handleView = () => {
@@ -164,11 +179,11 @@ export function MemoryDictionary() {
   useEffect(() => {
     if (!timerRunning) return;
     // If timer reaches 0 stop
-    // if (timeLeft <= 0) {
-    //   setIsActive(true);
-    //   setIsGameOver(true);
-    //   return;
-    // }
+    if (timeLeft <= 0) {
+      setIsActive(true);
+      setIsGameOver(true);
+      return;
+    }
 
     // Runs one instance of setInterval which runs for one second
     const intervalId = setInterval(() => {
