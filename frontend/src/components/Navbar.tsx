@@ -1,71 +1,65 @@
-import { Box, Button, Typography } from "@mui/material";
-import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  Button,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Container,
+} from "@mui/material";
+import logo from "../assets/logo.png";
 
 export function Navbar() {
+  const pages = ["Dashboard", "Memory Dictionary", "Sliding Tiles"];
+  const links = ["/dashboard", "/game/memorydictionary", "/game/slidingtiles"];
+
   const navigate = useNavigate();
   return (
-    <Box
-      sx={{
-        display: "flex",
-        width: "100%",
-        height: "100px",
-        position: "absolute",
-        backgroundColor: "#808080",
-        alignItems: "center",
-      }}
-    >
-      <Box
-        sx={{
-          p: "20px",
-        }}
-      >
-        <img src={logo} style={{ width: "50px", height: "65px" }} />
-      </Box>
+    <AppBar position="static">
+      <Container maxWidth="xl">
+        <Toolbar disableGutters sx={{ display: "flex", gap: "20px" }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              color="inherit"
+            ></IconButton>
+          </Box>
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          gap: 2,
-        }}
-      >
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#787878",
-            color: "#fff",
-            border: "1px solid #fff",
-          }}
-          onClick={() => navigate("/dashboard")}
-        >
-          <Typography variant="body1">Dashboard</Typography>
-        </Button>
+          {/* Logo img */}
+          <img src={logo} style={{ width: "35px", height: "50px" }} />
 
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#787878",
-            color: "#fff",
-            border: "1px solid #fff",
-          }}
-          onClick={() => navigate("/game/memorydictionary")}
-        >
-          <Typography variant="body1">Memory Dictionary</Typography>
-        </Button>
-        
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#787878",
-            color: "#fff",
-            border: "1px solid #fff",
-          }}
-          onClick={() => navigate("/game/slidingtiles")}
-        >
-          <Typography variant="body1">Sliding Tiles</Typography>
-        </Button>
-      </Box>
-    </Box>
+          {/* Nav buttons */}
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", md: "flex" },
+              gap: "20px",
+            }}
+          >
+            {pages.map((page, index) => (
+              <Button
+                key={page}
+                onClick={() => navigate(links[index])}
+                sx={{
+                  my: 2,
+                  color: "white",
+                  display: "block",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    backgroundColor: "rgb(25, 118, 211)",
+                    transform: "scale(1.05)",
+                  },
+                }}
+              >
+                {page}
+              </Button>
+            ))}
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
 }
