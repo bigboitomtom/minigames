@@ -16,12 +16,19 @@ const DEFAULT_LIVES = 100;
 const DEFAULT_HINTS = 5;
 const DEFAULT_TIME = 10;
 
+// Leaderboard entry
 type entry = {
   name: string;
   score: number;
   timeCreated: Date;
 };
 
+/**
+ * Helper function for generating a new word
+ * @param dictionary
+ * @param prevWord 
+ * @returns {string}
+ */
 const generateNewWord = (dictionary: string[], prevWord: string): string => {
   if (dictionary.length === 0) {
     return generate({ maxLength: 3 }) as string;
@@ -53,31 +60,42 @@ const generateNewWord = (dictionary: string[], prevWord: string): string => {
 
 export function MemoryDictionary() {
   const navigate = useNavigate();
+  const isSmall = useMediaQuery("(max-width:540px)");
+
+  // State renders
   const [isActive, setIsActive] = useState<boolean>(false);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isViewing, setIsViewing] = useState<boolean>(false);
-  const [currWord, setCurrWord] = useState<string>(
-    generate({ maxLength: 3 }) as string,
-  );
+
+  // Score states
   const [score, setScore] = useState<number>(DEFAULT_SCORE);
   const [highScore, setHighScore] = useState<number>(() => {
     return parseInt(localStorage.getItem("highScore") as string) || 0;
   });
+
+  // Game variables
+  const [currWord, setCurrWord] = useState<string>(
+    generate({ maxLength: 3 }) as string,
+  );
   const [lives, setLives] = useState<number>(DEFAULT_LIVES);
   const [hints, setHints] = useState<number>(DEFAULT_HINTS);
   const [dictionary, setDictionary] = useState<string[]>([]);
 
+  // Timer states
   const [timeLeft, setTimeLeft] = useState<number>(DEFAULT_TIME);
   const [timerRunning, setTimerRunning] = useState<boolean>(false);
 
+  // Leaderboard variables
   const [newRanking, setNewRanking] = useState<boolean>(false);
   const [rankName, setRankName] = useState<string>("");
 
   const seenWords = useRef<Set<string>>(new Set());
   const intervalRef = useRef<number | undefined>(-1);
 
-  const isSmall = useMediaQuery("(max-width:540px)");
-
+  /**
+   * Helper function to check if answer is correct or not
+   * @param isMistake 
+   */
   const processAnswer = (isMistake: boolean): void => {
     if (isMistake) {
       const newLives = lives - 1;
@@ -99,16 +117,25 @@ export function MemoryDictionary() {
     setTimeLeft(DEFAULT_TIME);
   };
 
+  /**
+   * Event handler for adding a word
+   */
   const handleAdd = () => {
     const isMistake = dictionary.includes(currWord);
     processAnswer(isMistake);
   };
 
+  /**
+   * Event handler for a seened word
+   */
   const handleSeen = () => {
     const isMistake = !dictionary.includes(currWord);
     processAnswer(isMistake);
   };
 
+  /**
+   * Event handler for viewing dictionary
+   */
   const handleView = () => {
     if (hints !== 0) {
       setHints((prevHints) => prevHints - 1);
@@ -118,6 +145,9 @@ export function MemoryDictionary() {
     }
   };
 
+  /**
+   * Event handler for closing dictionary
+   */
   const handleViewClose = () => {
     setIsViewing(false);
     setIsActive(true);
@@ -126,11 +156,17 @@ export function MemoryDictionary() {
     setTimeLeft((prevTime) => prevTime + 1);
   };
 
+  /**
+   * Event handler for game over
+   */
   const handleGameOver = () => {
     setIsGameOver(true);
     setTimerRunning(false);
   };
 
+  /**
+   * Event handler for new game
+   */
   const handleNewGame = () => {
     setIsActive(true);
     setIsGameOver(false);
@@ -146,11 +182,17 @@ export function MemoryDictionary() {
     seenWords.current = new Set();
   };
 
+  /**
+   * Event handler for returning to home
+   */
   const handleReturnHome = () => {
     setIsActive(false);
     setIsGameOver(false);
   };
 
+  /**
+   * Event handler for creating a new ranking for leaderboard
+   */
   const handleNewRanking = async () => {
     if (!rankName || rankName === "") {
       alert("Plase enter a name!");
@@ -175,13 +217,18 @@ export function MemoryDictionary() {
     }
   };
 
-  // Sets the new highscore dynamically when score changes
+  /**
+   * Sets the new highscore dynamically when score changes
+   */
   useEffect(() => {
     if (score > highScore) {
       localStorage.setItem("highScore", score.toString());
     }
   }, [score]);
 
+  /**
+   * Timer for the game
+   */
   useEffect(() => {
     if (!timerRunning) return;
 
