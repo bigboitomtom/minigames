@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Typography } from "@mui/material";
+import { Box, Button, Modal, Typography, useMediaQuery } from "@mui/material";
 import { Navbar } from "../components/Navbar";
 import { useEffect, useState } from "react";
 import img1 from "../assets/shrek1.png";
@@ -142,6 +142,8 @@ export function SlidingTiles() {
   } | null>(null);
   const [timeRunning, setTimeRunning] = useState<number>(-1);
 
+  const isSmall = useMediaQuery("(max-width:500px)");
+
   const handleImgClick = (rowIndex: number, i: number): void => {
     if (isGameOver) return;
     const selectedImg = displayImgs[rowIndex][i];
@@ -171,7 +173,7 @@ export function SlidingTiles() {
 
   const handleReturnHome = () => {
     setIsActive(false);
-  }
+  };
 
   // Timer for active game
   useEffect(() => {
@@ -181,7 +183,7 @@ export function SlidingTiles() {
       setTimeRunning(timeRunning + 1);
     }, 1000);
 
-    return () => clearInterval(intervalId)
+    return () => clearInterval(intervalId);
   }, [timeRunning]);
 
   // Check for winning game
@@ -214,12 +216,13 @@ export function SlidingTiles() {
           alignItems: "center",
         }}
       >
+        {/* Render home screen */}
         {!isActive && (
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
-              rowGap: "10px"
+              rowGap: "10px",
             }}
           >
             <Typography variant="h3" textAlign={"center"}>
@@ -242,16 +245,26 @@ export function SlidingTiles() {
               >
                 Start Game
               </Button>
-              <Button variant="contained" disabled>View Leaderboard</Button>
+              <Button variant="contained" disabled>
+                View Leaderboard
+              </Button>
             </Box>
           </Box>
         )}
 
         {/* Render active game */}
         {isActive && (
-          <Box sx={{display: "flex", flexDirection: "column", rowGap: "10px" }}>
-            {isGameOver && <Typography variant="h5" textAlign={"center"}>Game Over</Typography>}
-            <Typography variant="h5" textAlign={"center"}>Time: {timeRunning}</Typography>
+          <Box
+            sx={{ display: "flex", flexDirection: "column", rowGap: "10px" }}
+          >
+            {isGameOver && (
+              <Typography variant="h5" textAlign={"center"}>
+                Game Over
+              </Typography>
+            )}
+            <Typography variant="h5" textAlign={"center"}>
+              Time: {timeRunning}
+            </Typography>
             {!isGameOver && (
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Button variant="contained" onClick={handleReset}>
@@ -270,7 +283,7 @@ export function SlidingTiles() {
                         top: "50%",
                         left: "50%",
                         transform: "translate(-50%, -50%)",
-                        width: 450,
+                        width: isSmall ? "275px" : "450px",
                         bgcolor: "background.paper",
                         border: "2px solid #000",
                         boxShadow: 24,
@@ -279,7 +292,10 @@ export function SlidingTiles() {
                     >
                       <img
                         src={solvedImg}
-                        style={{ width: "450px", height: "450px" }}
+                        style={{
+                          width: isSmall ? "275px" : "450px",
+                          height: isSmall ? "275px" : "450px",
+                        }}
                       />
                     </Box>
                   </Modal>
@@ -287,20 +303,28 @@ export function SlidingTiles() {
               </Box>
             )}
 
+            {/* Render for game over */}
             {isGameOver && (
-              <Box sx={{display: "flex", justifyContent: "center", gap: "10px" }}>
+              <Box
+                sx={{ display: "flex", justifyContent: "center", gap: "10px" }}
+              >
                 <Button variant="contained" onClick={handleReset}>
                   New Game
                 </Button>
-                <Button variant="contained" onClick={handleReturnHome}>Return To Home</Button>
+                <Button variant="contained" onClick={handleReturnHome}>
+                  Return To Home
+                </Button>
               </Box>
             )}
 
+            {/* Render for sliding tiles */}
             <Box
               tabIndex={0}
               sx={{
                 display: "grid",
-                gridTemplateColumns: "repeat(3, 150px)",
+                gridTemplateColumns: isSmall
+                  ? "repeat(3, 100px)"
+                  : "repeat(3, 150px)",
                 justifyContent: "center",
                 border: "2px solid black",
               }}
@@ -311,27 +335,32 @@ export function SlidingTiles() {
                     <Box
                       key={colIndex}
                       sx={{
-                        width: "150px",
-                        height: "150px",
+                        width: isSmall ? "100px" : "150px",
+                        height: isSmall ? "100px" : "150px",
                         aspectRatio: "1 / 1",
                         margin: "0 auto",
                       }}
                       onClick={() => handleImgClick(rowIndex, colIndex)}
                     >
-                      <img
-                        src={item}
-                        onMouseEnter={() =>
-                          setHoveredTile({ row: rowIndex, col: colIndex })
-                        }
-                        onMouseLeave={() => setHoveredTile(null)}
-                        style={{
-                          filter:
-                            hoveredTile?.row === rowIndex &&
-                            hoveredTile?.col === colIndex
-                              ? "brightness(70%)"
-                              : "brightness(100%)",
-                        }}
-                      />
+                      {item && (
+                        <img
+                          src={item}
+                          onMouseEnter={() =>
+                            setHoveredTile({ row: rowIndex, col: colIndex })
+                          }
+                          onMouseLeave={() => setHoveredTile(null)}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            filter:
+                              hoveredTile?.row === rowIndex &&
+                              hoveredTile?.col === colIndex
+                                ? "brightness(70%)"
+                                : "brightness(100%)",
+                          }}
+                        />
+                      )}
                     </Box>
                   ))}
                 </Box>
