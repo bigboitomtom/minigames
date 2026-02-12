@@ -31,17 +31,16 @@ type entry = {
  */
 const generateNewWord = (dictionary: string[], prevWord: string): string => {
   if (dictionary.length === 0) {
-    return generate({ maxLength: 3 }) as string;
+    return generate() as string;
   }
 
-  const prob = Math.random();
   const repeatIndex = Math.floor(Math.random() * (dictionary.length - 1));
-
-  let currWord: string = generate({ maxLength: 3 }) as string;
-
+  
   // Prevent infinite loop
   let attempts: number = 0;
-  while (prevWord === currWord && attempts < 50) {
+  let currWord: string = generate() as string;
+  while (attempts < 50) {
+    const prob = Math.random();
     if (dictionary.length <= 15 && prob <= 0.2) {
       currWord = dictionary[repeatIndex];
     } else if (dictionary.length <= 25 && prob <= 0.3) {
@@ -51,7 +50,7 @@ const generateNewWord = (dictionary: string[], prevWord: string): string => {
     } else if (dictionary.length > 35 && prob <= 0.5) {
       currWord = dictionary[repeatIndex];
     }
-
+    if (prevWord !== currWord) break;
     attempts++;
   }
 
@@ -74,9 +73,7 @@ export function MemoryDictionary() {
   });
 
   // Game variables
-  const [currWord, setCurrWord] = useState<string>(
-    generate({ maxLength: 3 }) as string,
-  );
+  const [currWord, setCurrWord] = useState<string>(generate() as string);
   const [lives, setLives] = useState<number>(DEFAULT_LIVES);
   const [hints, setHints] = useState<number>(DEFAULT_HINTS);
   const [dictionary, setDictionary] = useState<string[]>([]);
@@ -114,6 +111,7 @@ export function MemoryDictionary() {
       seenWords.current.add(currWord);
     }
     setCurrWord(generateNewWord(Array.from(seenWords.current), currWord));
+    console.log("hi");
     setTimeLeft(DEFAULT_TIME);
   };
 

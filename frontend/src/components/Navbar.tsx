@@ -27,7 +27,8 @@ export function Navbar() {
   const location = useLocation();
 
   const isSmall = useMediaQuery("(max-width:500px)");
-  const navbarShrink = useMediaQuery("(max-width:600px)");navbarShrink
+  const navbarShrink = useMediaQuery("(max-width:600px)");
+  navbarShrink;
   const isOnDashboard = location.pathname === dashboardPath;
 
   // Menu handlers
@@ -54,7 +55,13 @@ export function Navbar() {
           {/* Logo name */}
           <Typography variant="h5">Minigames</Typography>
           {/* Logo img */}
-          <img src={logo} style={{ width: navbarShrink ? "30px" : "35px", height: navbarShrink ? "45px" : "50px" }} />
+          <img
+            src={logo}
+            style={{
+              width: navbarShrink ? "30px" : "35px",
+              height: navbarShrink ? "45px" : "50px",
+            }}
+          />
 
           {/* Nav buttons */}
           {!isOnDashboard && (
