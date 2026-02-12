@@ -1,8 +1,8 @@
-
 import { Navbar } from "../components/Navbar";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useMediaQuery } from "@mui/material";
 
 export function Dashboard() {
+  const isSmall = useMediaQuery("(max-width: 500px)");
   return (
     <Box
       sx={{
@@ -21,7 +21,11 @@ export function Dashboard() {
           alignItems: "center",
         }}
       >
-        <Typography variant="h3" textAlign={"center"}>Click a game on the navbar to start!</Typography>
+        <Typography variant="h3" textAlign={"center"}>
+          {isSmall
+            ? "Click a game from the menu icon to start!"
+            : "Click a game on the navbar to start!"}
+        </Typography>
       </Box>
     </Box>
   );
