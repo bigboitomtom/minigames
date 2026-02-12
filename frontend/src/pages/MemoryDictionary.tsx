@@ -186,6 +186,7 @@ export function MemoryDictionary() {
   const handleReturnHome = () => {
     setIsActive(false);
     setIsGameOver(false);
+    setIsViewing(false);
   };
 
   /**
@@ -406,8 +407,8 @@ export function MemoryDictionary() {
             <Typography variant="h6" textAlign={"center"}>Time Left: {timeLeft}</Typography>
             <Box
               sx={{
-                width: "200px",
-                height: "200px",
+                width: "300px",
+                height: "300px",
                 border: "1px solid black",
                 textAlign: "center",
                 overflowY: "auto",
