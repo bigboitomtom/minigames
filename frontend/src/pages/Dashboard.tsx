@@ -21,7 +21,7 @@ export function Dashboard() {
           alignItems: "center",
         }}
       >
-        <Typography variant="h3">Click a game on the navbar to start!</Typography>
+        <Typography variant="h3" textAlign={"center"}>Click a game on the navbar to start!</Typography>
       </Box>
     </Box>
   );

@@ -58,19 +58,19 @@ export function MemoryDictionary() {
   const [dictionary, setDictionary] = useState<string[]>([]);
 
   const [timeLeft, setTimeLeft] = useState<number>(DEFAULT_TIME);
-  const [timerRunning, setTimerRunning] = useState<boolean>(true);
+  const [timerRunning, setTimerRunning] = useState<boolean>(false);
 
   const [newRanking, setNewRanking] = useState<boolean>(false);
   const [rankName, setRankName] = useState<string>("");
 
   const seenWords = useRef<Set<string>>(new Set());
-  const lock = useRef<boolean>(false);
+  const intervalRef = useRef<number | undefined>(-1);
 
   const processAnswer = (isMistake: boolean): void => {
     if (isMistake) {
       const newLives = lives - 1;
       if (newLives === 0) {
-        setIsGameOver(true);
+        handleGameOver();
       } else {
         setLives(newLives);
       }
@@ -87,27 +87,13 @@ export function MemoryDictionary() {
   };
 
   const handleAdd = () => {
-    if (lock.current) return;
-    lock.current = true;
-    
     const isMistake = dictionary.includes(currWord);
     processAnswer(isMistake);
-
-    setTimeout(() => {
-      lock.current = false;
-    }, 200);
   };
 
   const handleSeen = () => {
-    if (lock.current) return;
-    lock.current = true;
-
     const isMistake = !dictionary.includes(currWord);
     processAnswer(isMistake);
-
-    setTimeout(() => {
-      lock.current = false;
-    }, 200);
   };
 
   const handleView = () => {
@@ -127,6 +113,11 @@ export function MemoryDictionary() {
     setTimeLeft(timeLeft + 1);
   };
 
+  const handleGameOver = () => {
+    setIsGameOver(true);
+    setTimerRunning(false);
+  }
+
   const handleNewGame = () => {
     setIsActive(true);
     setIsGameOver(false);
@@ -134,10 +125,12 @@ export function MemoryDictionary() {
     setLives(DEFAULT_LIVES);
     setHints(DEFAULT_HINTS);
     setTimeLeft(DEFAULT_TIME);
+    setTimerRunning(true);
     setHighScore(() => {
       return parseInt(localStorage.getItem("highScore") as string) || 0;
     });
     setDictionary([]);
+    seenWords.current = new Set();
   };
 
   const handleReturnHome = () => {
@@ -176,23 +169,72 @@ export function MemoryDictionary() {
     }
   }, [score]);
 
+  // useEffect(() => {
+  //   if (!timerRunning) return;
+  //   // If timer reaches 0 stop
+  //   if (timeLeft <= 0) {
+  //     setIsActive(true);
+  //     setIsGameOver(true);
+  //     return;
+  //   }
+
+  //   // Runs one instance of setInterval which runs for one second
+  //   const intervalId = setInterval(() => {
+  //     setTimeLeft(timeLeft - 1);
+  //   }, 1000);
+
+  //   // When a new setInterval is called the previous one is cleared
+  //   return () => clearInterval(intervalId);
+  // }, [timeLeft]);
+
+  // useEffect(() => {
+  //   if (!timerRunning) return;
+  //   console.log("hello");
+  //   const intervalId = setInterval(() => {
+  //     setTimeLeft((prev) => {
+  //       console.log("prev", prev);
+  //       if (prev <= 1) {
+  //         clearInterval(intervalId);
+  //         setIsActive(true);
+  //         setIsGameOver(true);
+  //         setTimerRunning(false);
+  //         return 0;
+  //       }
+  //       return prev - 1;
+  //     })
+  //   }, 1000);
+  // }, [timerRunning]);
+
+
+  // Timer problem, button spam cuases crash
   useEffect(() => {
     if (!timerRunning) return;
-    // If timer reaches 0 stop
-    if (timeLeft <= 0) {
-      setIsActive(true);
-      setIsGameOver(true);
-      return;
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
     }
 
-    // Runs one instance of setInterval which runs for one second
-    const intervalId = setInterval(() => {
-      setTimeLeft(timeLeft - 1);
+    intervalRef.current = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = undefined;
+          setIsActive(true);
+          setIsGameOver(true);
+          setTimerRunning(false);
+          return 0;
+        }
+        return prevTime - 1;
+      })
     }, 1000);
 
-    // When a new setInterval is called the previous one is cleared
-    return () => clearInterval(intervalId);
-  }, [timeLeft]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = undefined;
+      }
+    }
+  }, [timerRunning]);
 
   useEffect(() => {
     // Ensures the fetch is only ran when game is finished
