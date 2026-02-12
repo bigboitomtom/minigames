@@ -30,12 +30,12 @@ type entry = {
  * @returns {string}
  */
 const generateNewWord = (dictionary: string[], prevWord: string): string => {
-  if (dictionary.length === 0) {
+  if (dictionary.length <= 1) {
     return generate() as string;
   }
 
   const repeatIndex = Math.floor(Math.random() * (dictionary.length - 1));
-  
+
   // Prevent infinite loop
   let attempts: number = 0;
   let currWord: string = generate() as string;
@@ -43,13 +43,14 @@ const generateNewWord = (dictionary: string[], prevWord: string): string => {
     const prob = Math.random();
     if (dictionary.length <= 15 && prob <= 0.2) {
       currWord = dictionary[repeatIndex];
-    } else if (dictionary.length <= 25 && prob <= 0.3) {
+    } else if (dictionary.length > 15 && prob <= 0.3) {
       currWord = dictionary[repeatIndex];
-    } else if (dictionary.length <= 35 && prob <= 0.4) {
+    } else if (dictionary.length > 25 && prob <= 0.4) {
       currWord = dictionary[repeatIndex];
     } else if (dictionary.length > 35 && prob <= 0.5) {
       currWord = dictionary[repeatIndex];
     }
+
     if (prevWord !== currWord) break;
     attempts++;
   }
@@ -111,7 +112,6 @@ export function MemoryDictionary() {
       seenWords.current.add(currWord);
     }
     setCurrWord(generateNewWord(Array.from(seenWords.current), currWord));
-    console.log("hi");
     setTimeLeft(DEFAULT_TIME);
   };
 
