@@ -34,7 +34,6 @@ const generateNewWord = (dictionary: string[], prevWord: string): string => {
     return generate() as string;
   }
 
-  
   // Prevent infinite loop
   let attempts: number = 0;
   let currWord: string = generate() as string;
