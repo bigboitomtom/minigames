@@ -152,8 +152,6 @@ export function MemoryDictionary() {
     setIsViewing(false);
     setIsActive(true);
     setTimerRunning(true);
-    // Add one second since view close takes one second
-    setTimeLeft((prevTime) => prevTime + 1);
   };
 
   /**
@@ -405,6 +403,7 @@ export function MemoryDictionary() {
               rowGap: "10px",
             }}
           >
+            <Typography variant="h6" textAlign={"center"}>Time Left: {timeLeft}</Typography>
             <Box
               sx={{
                 width: "200px",
@@ -412,6 +411,7 @@ export function MemoryDictionary() {
                 border: "1px solid black",
                 textAlign: "center",
                 overflowY: "auto",
+                backgroundColor: "rgb(255, 255, 255)"
               }}
             >
               <Grid container spacing={2}>
