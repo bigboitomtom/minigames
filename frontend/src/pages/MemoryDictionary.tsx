@@ -12,7 +12,7 @@ import { generate } from "random-words";
 import { useNavigate } from "react-router-dom";
 
 const DEFAULT_SCORE = 0;
-const DEFAULT_LIVES = 3;
+const DEFAULT_LIVES = 100;
 const DEFAULT_HINTS = 5;
 const DEFAULT_TIME = 10;
 
@@ -31,7 +31,10 @@ const generateNewWord = (dictionary: string[], prevWord: string): string => {
   const repeatIndex = Math.floor(Math.random() * (dictionary.length - 1));
 
   let currWord: string = generate({ maxLength: 3 }) as string;
-  while (true) {
+
+  // Prevent infinite loop
+  let attempts: number = 0;
+  while (prevWord === currWord && attempts < 50) {
     if (dictionary.length <= 15 && prob <= 0.2) {
       currWord = dictionary[repeatIndex];
     } else if (dictionary.length <= 25 && prob <= 0.3) {
@@ -42,7 +45,7 @@ const generateNewWord = (dictionary: string[], prevWord: string): string => {
       currWord = dictionary[repeatIndex];
     }
 
-    if (prevWord !== currWord) break;
+    attempts++;
   }
 
   return currWord;
@@ -73,7 +76,7 @@ export function MemoryDictionary() {
   const seenWords = useRef<Set<string>>(new Set());
   const intervalRef = useRef<number | undefined>(-1);
 
-  const isSmall = useMediaQuery("(max-width:450px)");
+  const isSmall = useMediaQuery("(max-width:540px)");
 
   const processAnswer = (isMistake: boolean): void => {
     if (isMistake) {
@@ -81,17 +84,18 @@ export function MemoryDictionary() {
       if (newLives === 0) {
         handleGameOver();
       } else {
-        setLives(newLives);
+        setLives((prevLives) => prevLives - 1);
       }
     } else {
-      setScore(score + 1);
+      setScore((prevScore) => prevScore + 1);
     }
 
+    // Check if word is in dictionary
     if (!seenWords.current.has(currWord)) {
-      setDictionary([...dictionary, currWord]);
+      setDictionary((prevDictionary) => [...prevDictionary, currWord]);
       seenWords.current.add(currWord);
     }
-    setCurrWord(generateNewWord(dictionary, currWord));
+    setCurrWord(generateNewWord(Array.from(seenWords.current), currWord));
     setTimeLeft(DEFAULT_TIME);
   };
 
@@ -107,7 +111,7 @@ export function MemoryDictionary() {
 
   const handleView = () => {
     if (hints !== 0) {
-      setHints(hints - 1);
+      setHints((prevHints) => prevHints - 1);
       setIsViewing(true);
       setIsActive(false);
       setTimerRunning(false);
@@ -119,7 +123,7 @@ export function MemoryDictionary() {
     setIsActive(true);
     setTimerRunning(true);
     // Add one second since view close takes one second
-    setTimeLeft(timeLeft + 1);
+    setTimeLeft((prevTime) => prevTime + 1);
   };
 
   const handleGameOver = () => {
@@ -178,71 +182,29 @@ export function MemoryDictionary() {
     }
   }, [score]);
 
-  // useEffect(() => {
-  //   if (!timerRunning) return;
-  //   // If timer reaches 0 stop
-  //   if (timeLeft <= 0) {
-  //     setIsActive(true);
-  //     setIsGameOver(true);
-  //     return;
-  //   }
+  useEffect(() => {
+    if (!timerRunning) return;
 
-  //   // Runs one instance of setInterval which runs for one second
-  //   const intervalId = setInterval(() => {
-  //     setTimeLeft(timeLeft - 1);
-  //   }, 1000);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
 
-  //   // When a new setInterval is called the previous one is cleared
-  //   return () => clearInterval(intervalId);
-  // }, [timeLeft]);
+    // Insures only one interval is running at any given time
+    intervalRef.current = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = undefined;
+          setIsActive(true);
+          setIsGameOver(true);
+          setTimerRunning(false);
+          return 0;
+        }
+        return prevTime - 1;
+      })
+    }, 1000);
 
-  // useEffect(() => {
-  //   if (!timerRunning) return;
-  //   console.log("hello");
-  //   const intervalId = setInterval(() => {
-  //     setTimeLeft((prev) => {
-  //       console.log("prev", prev);
-  //       if (prev <= 1) {
-  //         clearInterval(intervalId);
-  //         setIsActive(true);
-  //         setIsGameOver(true);
-  //         setTimerRunning(false);
-  //         return 0;
-  //       }
-  //       return prev - 1;
-  //     })
-  //   }, 1000);
-  // }, [timerRunning]);
-
-  // Timer problem, button spam cuases crash
-  // useEffect(() => {
-  //   if (!timerRunning) return;
-
-  //   if (intervalRef.current) {
-  //     clearInterval(intervalRef.current);
-  //   }
-
-  //   intervalRef.current = setInterval(() => {
-  //     setTimeLeft((prevTime) => {
-  //       if (prevTime <= 1) {
-  //         clearInterval(intervalRef.current);
-  //         intervalRef.current = undefined;
-  //         setIsActive(true);
-  //         setIsGameOver(true);
-  //         setTimerRunning(false);
-  //         return 0;
-  //       }
-  //       return prevTime - 1;
-  //     })
-  //   }, 1000);
-
-  //   return () => {
-  //     if (intervalRef.current) {
-  //       clearInterval(intervalRef.current);
-  //       intervalRef.current = undefined;
-  //     }
-  //   }
-  // }, [timerRunning]);
+  }, [timerRunning]);
 
   useEffect(() => {
     // Ensures the fetch is only ran when game is finished
@@ -334,6 +296,7 @@ export function MemoryDictionary() {
           <Box>
             <Box
               sx={{
+                margin: "10px",
                 display: "flex",
                 flexDirection: isSmall ? "column" : "row",
                 gap: isSmall ? "0px" : "40px",
@@ -375,7 +338,7 @@ export function MemoryDictionary() {
                 <Button
                   variant="contained"
                   onClick={handleView}
-                  sx={{ maxWidth: "277px", width: "100%" }}
+                  sx={{ maxWidth: "260px", width: "100%" }}
                   disabled={hints <= 0}
                 >
                   View Dictionary
