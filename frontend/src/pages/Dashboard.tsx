@@ -5,7 +5,6 @@ import {
   CardActionArea,
   CardContent,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import GridViewIcon from "@mui/icons-material/GridView";
