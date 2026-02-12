@@ -1,4 +1,11 @@
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  TextField,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { Navbar } from "../components/Navbar";
 import { useEffect, useRef, useState } from "react";
 import { generate } from "random-words";
@@ -66,6 +73,8 @@ export function MemoryDictionary() {
   const seenWords = useRef<Set<string>>(new Set());
   const intervalRef = useRef<number | undefined>(-1);
 
+  const isSmall = useMediaQuery("(max-width:450px)");
+
   const processAnswer = (isMistake: boolean): void => {
     if (isMistake) {
       const newLives = lives - 1;
@@ -116,7 +125,7 @@ export function MemoryDictionary() {
   const handleGameOver = () => {
     setIsGameOver(true);
     setTimerRunning(false);
-  }
+  };
 
   const handleNewGame = () => {
     setIsActive(true);
@@ -205,36 +214,35 @@ export function MemoryDictionary() {
   //   }, 1000);
   // }, [timerRunning]);
 
-
   // Timer problem, button spam cuases crash
-  useEffect(() => {
-    if (!timerRunning) return;
+  // useEffect(() => {
+  //   if (!timerRunning) return;
 
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
+  //   if (intervalRef.current) {
+  //     clearInterval(intervalRef.current);
+  //   }
 
-    intervalRef.current = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = undefined;
-          setIsActive(true);
-          setIsGameOver(true);
-          setTimerRunning(false);
-          return 0;
-        }
-        return prevTime - 1;
-      })
-    }, 1000);
+  //   intervalRef.current = setInterval(() => {
+  //     setTimeLeft((prevTime) => {
+  //       if (prevTime <= 1) {
+  //         clearInterval(intervalRef.current);
+  //         intervalRef.current = undefined;
+  //         setIsActive(true);
+  //         setIsGameOver(true);
+  //         setTimerRunning(false);
+  //         return 0;
+  //       }
+  //       return prevTime - 1;
+  //     })
+  //   }, 1000);
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = undefined;
-      }
-    }
-  }, [timerRunning]);
+  //   return () => {
+  //     if (intervalRef.current) {
+  //       clearInterval(intervalRef.current);
+  //       intervalRef.current = undefined;
+  //     }
+  //   }
+  // }, [timerRunning]);
 
   useEffect(() => {
     // Ensures the fetch is only ran when game is finished
@@ -287,10 +295,12 @@ export function MemoryDictionary() {
             sx={{
               display: "flex",
               flexDirection: "column",
-              rowGap: "10px"
+              rowGap: "10px",
             }}
           >
-            <Typography variant="h3">Memory Dictionary</Typography>
+            <Typography variant="h3" textAlign={"center"}>
+              Memory Dictionary
+            </Typography>
             <Box
               sx={{
                 display: "flex",
@@ -322,24 +332,37 @@ export function MemoryDictionary() {
         {/* Render for active game */}
         {isActive && !isGameOver && (
           <Box>
-            <Box sx={{display: "flex", flexDirection: "row", gap: "50px"}}>
-
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: isSmall ? "column" : "row",
+                gap: isSmall ? "0px" : "40px",
+                textAlign: isSmall ? "center" : "left",
+              }}
+            >
               <Typography variant="h6">Score: {score}</Typography>
               <Typography variant="h6">Lives: {lives}</Typography>
               <Typography variant="h6">Views Remaining: {hints}</Typography>
-
+              <Typography variant="h6">Time Left: {timeLeft}</Typography>
             </Box>
-            <Typography variant="h6">Time Left: {timeLeft}</Typography>
 
-            <Box sx={{margin: "50px"}}>
+            <Box sx={{ margin: "50px" }}>
               <Typography variant="h3" textAlign={"center"}>
                 {currWord}
               </Typography>
-            </Box> 
+            </Box>
 
             {/* Interact buttons */}
-            <Box sx={{ display: "flex", flexDirection: "column", rowGap: "10px"}}>
-              <Box sx={{ display: "flex", justifyContent: "space-evenly"}}>
+            <Box
+              sx={{ display: "flex", flexDirection: "column", rowGap: "10px" }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                  gap: isSmall ? "45px" : "0px",
+                }}
+              >
                 <Button variant="contained" onClick={handleAdd}>
                   Add
                 </Button>
@@ -348,13 +371,18 @@ export function MemoryDictionary() {
                 </Button>
               </Box>
 
-              <Box sx={{display: "flex", justifyContent: "center"}}>
-                  <Button variant="contained" onClick={handleView} sx={{ width: "233px"}} disabled={hints <= 0}>
-                    View Dictionary
-                  </Button>
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <Button
+                  variant="contained"
+                  onClick={handleView}
+                  sx={{ maxWidth: "277px", width: "100%" }}
+                  disabled={hints <= 0}
+                >
+                  View Dictionary
+                </Button>
               </Box>
-            </Box>
 
+            </Box>
           </Box>
         )}
 
@@ -364,7 +392,7 @@ export function MemoryDictionary() {
             sx={{
               display: "flex",
               flexDirection: "column",
-              rowGap: "10px"
+              rowGap: "10px",
             }}
           >
             <Box
@@ -398,8 +426,12 @@ export function MemoryDictionary() {
 
         {/* Render for Game Over */}
         {isActive && isGameOver && (
-          <Box sx={{display: "flex", flexDirection: "column", rowGap: "10px"}}>
-            <Typography variant="h3" textAlign={"center"}>Game Over!</Typography>
+          <Box
+            sx={{ display: "flex", flexDirection: "column", rowGap: "10px" }}
+          >
+            <Typography variant="h3" textAlign={"center"}>
+              Game Over!
+            </Typography>
             <Typography variant="h5" textAlign={"center"}>
               {score > highScore
                 ? `New High score: ${score}`
@@ -424,7 +456,7 @@ export function MemoryDictionary() {
               </Box>
             )}
 
-            <Box sx={{ display: "flex", gap: "10px"}}>
+            <Box sx={{ display: "flex", gap: "10px" }}>
               <Button variant="contained" onClick={handleNewGame}>
                 New Game
               </Button>
