@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 const games: string[] = ["Memory Dictionary", "Sliding Tiles"];
 const links: string[] = ["/game/memorydictionary", "/game/slidingtiles"];
 const descriptions: string[] = [
-  "Add as many short term memory words in the dictionary as possible.",
+  "Add as many short term memory words into the dictionary as possible.",
   "Move tiles within a set grid to complete the image.",
 ];
 
