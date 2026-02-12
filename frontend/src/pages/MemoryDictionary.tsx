@@ -34,13 +34,13 @@ const generateNewWord = (dictionary: string[], prevWord: string): string => {
     return generate() as string;
   }
 
-  const repeatIndex = Math.floor(Math.random() * (dictionary.length - 1));
-
+  
   // Prevent infinite loop
   let attempts: number = 0;
   let currWord: string = generate() as string;
   while (attempts < 50) {
     const prob = Math.random();
+    const repeatIndex = Math.floor(Math.random() * (dictionary.length - 1));
     if (dictionary.length <= 15 && prob <= 0.2) {
       currWord = dictionary[repeatIndex];
     } else if (dictionary.length > 15 && prob <= 0.3) {
