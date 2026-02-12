@@ -26,7 +26,7 @@ type entry = {
 /**
  * Helper function for generating a new word
  * @param dictionary
- * @param prevWord 
+ * @param prevWord
  * @returns {string}
  */
 const generateNewWord = (dictionary: string[], prevWord: string): string => {
@@ -94,7 +94,7 @@ export function MemoryDictionary() {
 
   /**
    * Helper function to check if answer is correct or not
-   * @param isMistake 
+   * @param isMistake
    */
   const processAnswer = (isMistake: boolean): void => {
     if (isMistake) {
@@ -247,9 +247,8 @@ export function MemoryDictionary() {
           return 0;
         }
         return prevTime - 1;
-      })
+      });
     }, 1000);
-
   }, [timerRunning]);
 
   useEffect(() => {
@@ -390,7 +389,6 @@ export function MemoryDictionary() {
                   View Dictionary
                 </Button>
               </Box>
-
             </Box>
           </Box>
         )}
@@ -404,7 +402,9 @@ export function MemoryDictionary() {
               rowGap: "10px",
             }}
           >
-            <Typography variant="h6" textAlign={"center"}>Time Left: {timeLeft}</Typography>
+            <Typography variant="h6" textAlign={"center"}>
+              Time Left: {timeLeft}
+            </Typography>
             <Box
               sx={{
                 width: "300px",
@@ -412,7 +412,7 @@ export function MemoryDictionary() {
                 border: "1px solid black",
                 textAlign: "center",
                 overflowY: "auto",
-                backgroundColor: "rgb(255, 255, 255)"
+                backgroundColor: "rgb(255, 255, 255)",
               }}
             >
               <Grid container spacing={2}>
