@@ -12,7 +12,7 @@ import { generate } from "random-words";
 import { useNavigate } from "react-router-dom";
 
 const DEFAULT_SCORE = 0;
-const DEFAULT_LIVES = 3;
+const DEFAULT_LIVES = 100;
 const DEFAULT_HINTS = 5;
 const DEFAULT_TIME = 10;
 
@@ -404,8 +404,8 @@ export function MemoryDictionary() {
             </Typography>
             <Box
               sx={{
-                width: "300px",
-                height: "300px",
+                width: isSmall ? "300px" : "500px",
+                height: isSmall ? "300px" : "500px",
                 border: "1px solid black",
                 textAlign: "center",
                 overflowY: "auto",
@@ -415,7 +415,7 @@ export function MemoryDictionary() {
               <Grid container spacing={2}>
                 {dictionary.map((item, index) => (
                   <Grid size={4}>
-                    <Typography variant="h6" key={index}>
+                    <Typography variant={isSmall ? "body1" : "h6"} key={index}>
                       {item}
                     </Typography>
                   </Grid>
