@@ -12,7 +12,7 @@ import { generate } from "random-words";
 import { useNavigate } from "react-router-dom";
 
 const DEFAULT_SCORE = 0;
-const DEFAULT_LIVES = 100;
+const DEFAULT_LIVES = 3;
 const DEFAULT_HINTS = 5;
 const DEFAULT_TIME = 10;
 
