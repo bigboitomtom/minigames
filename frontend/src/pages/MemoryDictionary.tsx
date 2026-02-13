@@ -225,28 +225,28 @@ export function MemoryDictionary() {
   /**
    * Timer for the game
    */
-  useEffect(() => {
-    if (!timerRunning) return;
+  // useEffect(() => {
+  //   if (!timerRunning) return;
 
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
+  //   if (intervalRef.current) {
+  //     clearInterval(intervalRef.current);
+  //   }
 
-    // Insures only one interval is running at any given time
-    intervalRef.current = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = undefined;
-          setIsActive(true);
-          setIsGameOver(true);
-          setTimerRunning(false);
-          return 0;
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
-  }, [timerRunning]);
+  //   // Insures only one interval is running at any given time
+  //   intervalRef.current = setInterval(() => {
+  //     setTimeLeft((prevTime) => {
+  //       if (prevTime <= 1) {
+  //         clearInterval(intervalRef.current);
+  //         intervalRef.current = undefined;
+  //         setIsActive(true);
+  //         setIsGameOver(true);
+  //         setTimerRunning(false);
+  //         return 0;
+  //       }
+  //       return prevTime - 1;
+  //     });
+  //   }, 1000);
+  // }, [timerRunning]);
 
   useEffect(() => {
     // Ensures the fetch is only ran when game is finished

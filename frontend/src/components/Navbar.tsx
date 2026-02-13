@@ -26,9 +26,9 @@ export function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isSmall = useMediaQuery("(max-width:500px)");
+  const isSmall = useMediaQuery("(max-width:700px)");
   const navbarShrink = useMediaQuery("(max-width:600px)");
-  navbarShrink;
+ 
   const isOnDashboard = location.pathname === dashboardPath;
 
   // Menu handlers
@@ -69,7 +69,7 @@ export function Navbar() {
               sx={{
                 flexGrow: 1,
                 display: { xs: "flex", md: "flex" },
-                justifyContent: isSmall ? "flex-end" : "row",
+                justifyContent: isSmall ? "flex-end" : "flex-start",
                 gap: "20px",
               }}
             >
