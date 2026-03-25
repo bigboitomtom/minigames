@@ -8,13 +8,15 @@ import {
 } from "@mui/material";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import GridViewIcon from "@mui/icons-material/GridView";
+import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
 import { useNavigate } from "react-router-dom";
 
-const games: string[] = ["Memory Dictionary", "Sliding Tiles"];
-const links: string[] = ["/game/memorydictionary", "/game/slidingtiles"];
+const games: string[] = ["Memory Dictionary", "Sliding Tiles", "Imposter"];
+const links: string[] = ["/game/memorydictionary", "/game/slidingtiles", "/game/imposter"];
 const descriptions: string[] = [
   "Add as many short term memory words into the dictionary as possible.",
   "Move tiles within a set grid to complete the image.",
+  "Given a word, find the imposter amongst the group (Clash Royale edition)."
 ];
 
 const iconStyle = {
@@ -25,6 +27,7 @@ const iconStyle = {
 const icons = [
   <AutoStoriesIcon sx={iconStyle} />,
   <GridViewIcon sx={iconStyle} />,
+  <PsychologyAltIcon sx={iconStyle} />,
 ];
 
 export function Dashboard() {

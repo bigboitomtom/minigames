@@ -15,8 +15,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import logo from "../assets/logo.png";
 import { useState } from "react";
 
-const pages = ["Dashboard", "Memory Dictionary", "Sliding Tiles"];
-const links = ["/dashboard", "/game/memorydictionary", "/game/slidingtiles"];
+const pages = ["Dashboard", "Memory Dictionary", "Sliding Tiles", "Imposter"];
+const links = ["/dashboard", "/game/memorydictionary", "/game/slidingtiles", "/game/imposter"];
 
 const dashboardPath = "/dashboard";
 

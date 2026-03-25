@@ -4,6 +4,7 @@ import "./App.css";
 import { MemoryDictionary } from "./pages/MemoryDictionary";
 import { Leaderboard } from "./pages/Leaderboard";
 import { SlidingTiles } from "./pages/SlidingTiles";
+import { Imposter } from "./pages/Imposter";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/game/memorydictionary" element={<MemoryDictionary />} />
       <Route path="/game/slidingtiles" element={<SlidingTiles />} />
+      <Route path="/game/imposter" element={<Imposter />} />
       <Route path="/leaderboard/:game" element={<Leaderboard />} />
     </Routes>
   )
