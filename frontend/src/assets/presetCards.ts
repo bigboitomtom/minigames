@@ -1,4 +1,6 @@
-export const cards = [
+// Includes every current card in Clash Royale
+
+export const presetCards = [
   "Archer Queen",
   "Archers",
   "Arrows",
@@ -120,4 +122,4 @@ export const cards = [
   "X-Bow",
   "Zap",
   "Zappies"
-]
+];

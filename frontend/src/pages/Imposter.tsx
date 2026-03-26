@@ -3,6 +3,7 @@ import { Navbar } from "../components/Navbar";
 import { NumberField } from "../components/NumberField";
 import { useEffect, useRef, useState } from "react";
 import { ImposterCard } from "../components/ImposterCard";
+import { presetCards } from "../assets/presetCards";
 
 const testWords: string[] = ["Giant", null as any, "Knight"];
 
@@ -11,10 +12,31 @@ type playerCard = {
   playerNum: number;
 };
 
+const cards: string[] = presetCards;
+
 // Returns random index of a player
 const shufflePlayers = (numPlayers: number) => {
-  return Math.floor(Math.random() * (numPlayers - 0));
+  return Math.floor(Math.random() * numPlayers);
 };
+
+const shuffleCards = (arr: string[]) => {
+  let currIndex: number = cards.length;
+  let randIndex: number;
+
+  while (currIndex !== 0) {
+    randIndex = Math.floor(Math.random() * currIndex);
+    currIndex--;
+
+    [arr[currIndex], arr[randIndex]] = [arr[randIndex], arr[currIndex]];
+  }
+};
+
+const selectCard = (arr: string[]): string => {
+  const randIndex = Math.floor(Math.random() * arr.length);
+  return arr[randIndex];
+};
+
+// const select imposters
 
 export function Imposter() {
   const [numPlayers, setNumPlayers] = useState<number>(3);
