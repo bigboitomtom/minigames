@@ -64,7 +64,9 @@ export function ImposterCard({ item, playerNum, onOpen }: ImposterCardProps) {
         </Typography>
         )}
         {showWord && (
-          <Typography variant="h5">
+          <Typography variant="h5" sx={{
+            color: item ? "#008000" : "#FF0000"
+          }}>
             {!item ? "You are the imposter" : item}
           </Typography>
         )}

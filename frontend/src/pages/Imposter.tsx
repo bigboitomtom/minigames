@@ -11,11 +11,16 @@ type playerCard = {
   playerNum: number;
 };
 
+// Returns random index of a player
+const shufflePlayers = (numPlayers: number) => {
+  return Math.floor(Math.random() * (numPlayers - 0));
+};
+
 export function Imposter() {
   const [numPlayers, setNumPlayers] = useState<number>(3);
   const [allPlayerWord, setAllPlayerWord] = useState<string[]>(testWords);
   const [currPlayerCard, setCurrPlayerCard] = useState<playerCard>(); // Technically of type obj
-
+  const [startPlayer, setStartPlayer] = useState<number>(-1);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [isStaging, setIsStaging] = useState<boolean>(false);
 
@@ -35,6 +40,7 @@ export function Imposter() {
   const handleActiveGame = () => {
     setIsStaging(false);
     setIsActive(true);
+    handleStartPlayer();
   };
 
   const handleNewGame = () => {
@@ -70,6 +76,10 @@ export function Imposter() {
     };
     setCurrPlayerCard(currPlayer);
     currPlayerIndex.current += 1;
+  };
+
+  const handleStartPlayer = () => {
+    setStartPlayer(shufflePlayers(numPlayers) + 1);
   };
 
   // For rendering first player
@@ -152,16 +162,12 @@ export function Imposter() {
                   Begin
                 </Button>
               ))}
-
-            {/* <Button variant="contained" onClick={handleActiveGame}>
-              Begin
-            </Button> */}
           </Box>
         )}
         {/* Rendering for active game  */}
         {isActive && !isStaging && (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="h1">Active game time</Typography>
+            <Typography variant="h3">Player {startPlayer} Starts!</Typography>
             <Button variant="contained" onClick={handleNewGame}>
               New Game
             </Button>
