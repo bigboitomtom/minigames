@@ -50,19 +50,26 @@ export function ImposterCard({ item, playerNum, onOpen }: ImposterCardProps) {
           gap: "10px",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: "bold", userSelect: "none" }}>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: "bold",
+            userSelect: "none",
+            WebkitUserSelect: "none",
+          }}
+        >
           Player {playerNum}
         </Typography>
-        {!showWord && (
-          <Typography variant="h6">
-          Hold to Reveal
-        </Typography>
-        )}
+        {!showWord && <Typography variant="h6">Hold to Reveal</Typography>}
         {showWord && (
-          <Typography variant="h6" sx={{
-            color: item ? "#008000" : "#FF0000",
-            userSelect: "none"
-          }}>
+          <Typography
+            variant="h6"
+            sx={{
+              color: item ? "#008000" : "#FF0000",
+              userSelect: "none",
+              WebkitUserSelect: "none",
+            }}
+          >
             {!item ? "You are the imposter" : item}
           </Typography>
         )}
