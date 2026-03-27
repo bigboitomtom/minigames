@@ -1,10 +1,8 @@
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { Box } from "@mui/material";
 import { useRef, useState } from "react";
+import { useMediaQuery } from "@mui/material";
 
 type ImposterCardProps = {
   item: string | undefined;
@@ -14,26 +12,23 @@ type ImposterCardProps = {
 
 export function ImposterCard({ item, playerNum, onOpen }: ImposterCardProps) {
   const [showWord, setShowWord] = useState<boolean>(false);
-  const [isHolding, setIsHolding] = useState<boolean>(false);
   const timeoutIdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const isSmall = useMediaQuery("(max-width:500px)");
+
   const startHold = () => {
-    setIsHolding(true);
     onOpen();
     timeoutIdRef.current = setTimeout(() => {
       setShowWord(true);
-      console.log("you are holding");
     }, 1);
   };
 
   const stopHold = () => {
-    setIsHolding(false);
     if (timeoutIdRef.current !== null) {
       clearTimeout(timeoutIdRef.current);
       timeoutIdRef.current = null;
     }
     setShowWord(false);
-    console.log("you stopped holding");
   };
 
   return (
@@ -46,8 +41,8 @@ export function ImposterCard({ item, playerNum, onOpen }: ImposterCardProps) {
     >
       <CardContent
         sx={{
-          width: "275px",
-          height: "350px",
+          width: isSmall ? "200px" : "275px",
+          height: isSmall ? "275px" : "350px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -64,16 +59,13 @@ export function ImposterCard({ item, playerNum, onOpen }: ImposterCardProps) {
         </Typography>
         )}
         {showWord && (
-          <Typography variant="h5" sx={{
+          <Typography variant="h6" sx={{
             color: item ? "#008000" : "#FF0000"
           }}>
             {!item ? "You are the imposter" : item}
           </Typography>
         )}
       </CardContent>
-      {/* <CardActions>
-        <Button size="small">Learn More</Button>
-      </CardActions> */}
     </Card>
   );
 }

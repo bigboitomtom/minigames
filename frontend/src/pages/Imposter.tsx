@@ -1,9 +1,10 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 import { Navbar } from "../components/Navbar";
 import { NumberField } from "../components/NumberField";
 import { useEffect, useRef, useState } from "react";
 import { ImposterCard } from "../components/ImposterCard";
 import { presetCards } from "../assets/presetCards";
+import { NumbersSharp } from "@mui/icons-material";
 
 const testWords: string[] = ["Giant", null as any, "Knight"];
 
@@ -19,6 +20,22 @@ const shufflePlayers = (numPlayers: number) => {
   return Math.floor(Math.random() * numPlayers);
 };
 
+const findImposters = (numPlayers: number): number[] => {
+  const imposterList: number[] = [];
+
+  // Ensures imposter 1 and 2 are never the same
+  const imposter1: number = Math.floor(Math.random() * numPlayers);
+  const imposter2: number =
+    (imposter1 + 1 + Math.floor(Math.random() * (numPlayers - 1))) % numPlayers;
+
+  imposterList.push(imposter1);
+  if (numPlayers >= 7) {
+    imposterList.push(imposter2);
+  }
+
+  return imposterList;
+};
+
 const shuffleCards = (arr: string[]) => {
   let currIndex: number = cards.length;
   let randIndex: number;
@@ -29,6 +46,7 @@ const shuffleCards = (arr: string[]) => {
 
     [arr[currIndex], arr[randIndex]] = [arr[randIndex], arr[currIndex]];
   }
+  return arr;
 };
 
 const selectCard = (arr: string[]): string => {
@@ -41,7 +59,7 @@ const selectCard = (arr: string[]): string => {
 export function Imposter() {
   const [numPlayers, setNumPlayers] = useState<number>(3);
   const [allPlayerWord, setAllPlayerWord] = useState<string[]>(testWords);
-  const [currPlayerCard, setCurrPlayerCard] = useState<playerCard>(); // Technically of type obj
+  const [currPlayerCard, setCurrPlayerCard] = useState<playerCard>();
   const [startPlayer, setStartPlayer] = useState<number>(-1);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [isStaging, setIsStaging] = useState<boolean>(false);
@@ -50,12 +68,29 @@ export function Imposter() {
 
   const currPlayerIndex = useRef<number>(0);
 
+  const isSmall = useMediaQuery("(max-width:500px)");
+
   const handleNumPlayers = (value: number) => {
     setNumPlayers(value);
-    console.log(numPlayers);
   };
 
   const handleToStaging = () => {
+    const shuffled = shuffleCards(cards);
+    const selectedCard = selectCard(shuffled);
+    const imposters = findImposters(numPlayers);
+
+    const playerWordList: string[] = [];
+    for (let i = 0; i < numPlayers; i++) {
+      // If the current index is an imposter
+      if (imposters.includes(i)) {
+        playerWordList.push(null as any);
+      } else {
+        // Else not an imposter
+        playerWordList.push(selectedCard);
+      }
+    }
+    setAllPlayerWord(playerWordList);
+
     setIsStaging(true);
   };
 
@@ -66,14 +101,17 @@ export function Imposter() {
   };
 
   const handleNewGame = () => {
+    handleToStaging();
     setIsStaging(true);
     setIsActive(false);
+    setWordOpened(false);
     currPlayerIndex.current = 0;
   };
 
   const handleReturnHome = () => {
     setIsStaging(false);
     setIsActive(false);
+    setWordOpened(false);
     currPlayerIndex.current = 0;
   };
 
@@ -131,12 +169,27 @@ export function Imposter() {
         {/* Rendering for inactive game */}
         {!isActive && !isStaging && (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="h3" sx={{ marginBottom: "20px" }}>
-              Imposter (Clash Royale Edition)
-            </Typography>
+            {isSmall && (
+              <Typography
+                variant="h4"
+                align="center"
+                sx={{ marginBottom: "20px" }}
+              >
+                Imposter (Clash Royale Edition)
+              </Typography>
+            )}
+            {!isSmall && (
+              <Typography
+                variant="h3"
+                align="center"
+                sx={{ marginBottom: "20px" }}
+              >
+                Imposter (Clash Royale Edition)
+              </Typography>
+            )}
             <Box
               sx={{
-                width: "30%",
+                width: isSmall ? "50%" : "30%",
                 display: "flex",
                 flexDirection: "column",
                 margin: "0 auto",
@@ -166,7 +219,7 @@ export function Imposter() {
         )}
         {/* Rendering for game staging */}
         {!isActive && isStaging && (
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             <Box sx={{ display: "flex", flexDirection: "row" }}>
               <ImposterCard
                 item={currPlayerCard?.word}
@@ -189,13 +242,24 @@ export function Imposter() {
         {/* Rendering for active game  */}
         {isActive && !isStaging && (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="h3">Player {startPlayer} Starts!</Typography>
-            <Button variant="contained" onClick={handleNewGame}>
-              New Game
-            </Button>
-            <Button variant="contained" onClick={handleReturnHome}>
-              Back to Home
-            </Button>
+            {isSmall && (
+              <Typography variant="h4" align="center">
+                Player {startPlayer} Starts!
+              </Typography>
+            )}
+            {!isSmall && (
+              <Typography variant="h3" align="center">
+                Player {startPlayer} Starts!
+              </Typography>
+            )}
+            <Box sx={{ display: "flex", flexDirection: "row", gap: "10px" }}>
+              <Button variant="contained" onClick={handleNewGame}>
+                New Game
+              </Button>
+              <Button variant="contained" onClick={handleReturnHome}>
+                Back to Home
+              </Button>
+            </Box>
           </Box>
         )}
       </Box>

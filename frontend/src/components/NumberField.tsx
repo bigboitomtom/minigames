@@ -9,6 +9,7 @@ import InputLabel from "@mui/material/InputLabel";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
+
 /**
  * This component is a placeholder for FormControl to correctly set the shrink label state on SSR.
  */
@@ -34,6 +35,7 @@ export function NumberField({
   if (idProp) {
     id = idProp;
   }
+
   return (
     <BaseNumberField.Root
       {...other}
