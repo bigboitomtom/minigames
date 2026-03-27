@@ -50,7 +50,7 @@ export function ImposterCard({ item, playerNum, onOpen }: ImposterCardProps) {
           gap: "10px",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold", userSelect: "none" }}>
           Player {playerNum}
         </Typography>
         {!showWord && (
@@ -60,7 +60,8 @@ export function ImposterCard({ item, playerNum, onOpen }: ImposterCardProps) {
         )}
         {showWord && (
           <Typography variant="h6" sx={{
-            color: item ? "#008000" : "#FF0000"
+            color: item ? "#008000" : "#FF0000",
+            userSelect: "none"
           }}>
             {!item ? "You are the imposter" : item}
           </Typography>

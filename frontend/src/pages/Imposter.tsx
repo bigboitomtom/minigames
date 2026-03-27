@@ -4,7 +4,6 @@ import { NumberField } from "../components/NumberField";
 import { useEffect, useRef, useState } from "react";
 import { ImposterCard } from "../components/ImposterCard";
 import { presetCards } from "../assets/presetCards";
-import { NumbersSharp } from "@mui/icons-material";
 
 const testWords: string[] = ["Giant", null as any, "Knight"];
 
